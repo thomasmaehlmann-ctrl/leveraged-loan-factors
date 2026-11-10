@@ -1,0 +1,19 @@
+cff-version: 1.2.0
+message: "If you use this software or the data releases, please cite them as below."
+title: "Leveraged Loan Factors"
+abstract: >-
+  Open-source pipeline and data releases of factor returns for US leveraged loans,
+  built from public SEC Form N-PORT filings of US registered investment funds.
+authors:
+  - family-names: "Mählmann"
+    given-names: "Thomas"
+version: "2026.11"
+date-released: "2026-11-30"
+license: MIT
+repository-code: "https://github.com/thomasmaehlmann-ctrl/leveraged-loan-factors"
+doi: "10.5281/zenodo.XXXXXXX"
+keywords:
+  - leveraged loans
+  - factor investing
+  - private debt
+  - SEC Form N-PORT

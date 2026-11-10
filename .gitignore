@@ -1,0 +1,15 @@
+# data and outputs (large, reproducible from SEC data)
+nport_data/
+nport_out/
+releases/
+*.zip
+*.parquet
+*.part
+# licensed third-party data (e.g. index levels from Bloomberg) must not be committed
+*.xlsx
+index_data/
+# Python
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.venv/
