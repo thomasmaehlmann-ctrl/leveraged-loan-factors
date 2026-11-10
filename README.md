@@ -1,5 +1,7 @@
 # Leveraged Loan Factors
 
+[![Data DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.24113424.svg)](https://doi.org/10.5281/zenodo.24113424)
+
 Open-source pipeline and data releases of **factor returns for US leveraged loans**, built
 entirely from public **SEC Form N-PORT** filings of US registered investment funds.
 
@@ -10,7 +12,7 @@ price panel that tracks the Morningstar LSTA US Leveraged Loan Index with a mont
 correlation of 0.995 (2019-10 to 2026-04). This repository turns these public filings into a
 factor database in the spirit of [JKP Factors](https://jkpfactors.com).
 
-- **Data releases:** see [Releases](https://github.com/thomasmaehlmann-ctrl/leveraged-loan-factors/releases) and Zenodo (DOI in `CITATION.cff`)
+- **Data releases:** Zenodo, [doi:10.5281/zenodo.24113424](https://doi.org/10.5281/zenodo.24113424) (all versions, resolves to the latest release); current release v2026.11: [doi:10.5281/zenodo.24113425](https://doi.org/10.5281/zenodo.24113425)
 - **Author:** Thomas Mählmann
 - **Licenses:** code MIT, data CC BY 4.0
 
@@ -122,4 +124,10 @@ See `docs/METHODOLOGY.md` and the methods paper for details and known limitation
 
 ## Citation
 
-Please cite the data release you use (DOI on Zenodo) and the methods paper. See `CITATION.cff`.
+Please cite the data release you use and the methods paper:
+
+> Mählmann, T. (2026). *Leveraged Loan Factors* (Version 2026.11) [Data set]. Zenodo.
+> https://doi.org/10.5281/zenodo.24113425
+
+To always refer to the latest release, use the concept DOI https://doi.org/10.5281/zenodo.24113424.
+For the software, see `CITATION.cff` ("Cite this repository" on GitHub).

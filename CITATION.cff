@@ -8,12 +8,22 @@ authors:
   - family-names: "Mählmann"
     given-names: "Thomas"
 version: "2026.11"
-date-released: "2026-11-30"
+date-released: "2026-11-10"
 license: MIT
 repository-code: "https://github.com/thomasmaehlmann-ctrl/leveraged-loan-factors"
-doi: "10.5281/zenodo.XXXXXXX"
 keywords:
   - leveraged loans
   - factor investing
   - private debt
   - SEC Form N-PORT
+references:
+  - type: data
+    title: "Leveraged Loan Factors"
+    authors:
+      - family-names: "Mählmann"
+        given-names: "Thomas"
+    version: "2026.11"
+    doi: "10.5281/zenodo.24113424"
+    url: "https://doi.org/10.5281/zenodo.24113424"
+    publisher:
+      name: "Zenodo"
