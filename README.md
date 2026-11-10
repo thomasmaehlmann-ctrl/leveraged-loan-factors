@@ -1,6 +1,7 @@
 # Leveraged Loan Factors
 
 [![Data DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.24113424.svg)](https://doi.org/10.5281/zenodo.24113424)
+[![Software DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.24114954.svg)](https://doi.org/10.5281/zenodo.24114954)
 
 Open-source pipeline and data releases of **factor returns for US leveraged loans**, built
 entirely from public **SEC Form N-PORT** filings of US registered investment funds.
@@ -13,6 +14,7 @@ correlation of 0.995 (2019-10 to 2026-04). This repository turns these public fi
 factor database in the spirit of [JKP Factors](https://jkpfactors.com).
 
 - **Data releases:** Zenodo, [doi:10.5281/zenodo.24113424](https://doi.org/10.5281/zenodo.24113424) (all versions, resolves to the latest release); current release v2026.11: [doi:10.5281/zenodo.24113425](https://doi.org/10.5281/zenodo.24113425)
+- **Software (this repository):** Zenodo, [doi:10.5281/zenodo.24114954](https://doi.org/10.5281/zenodo.24114954) (all versions); v2026.11: [doi:10.5281/zenodo.24114955](https://doi.org/10.5281/zenodo.24114955)
 - **Author:** Thomas Mählmann
 - **Licenses:** code MIT, data CC BY 4.0
 
@@ -130,4 +132,9 @@ Please cite the data release you use and the methods paper:
 > https://doi.org/10.5281/zenodo.24113425
 
 To always refer to the latest release, use the concept DOI https://doi.org/10.5281/zenodo.24113424.
-For the software, see `CITATION.cff` ("Cite this repository" on GitHub).
+If you use or adapt the pipeline, please also cite the software:
+
+> Mählmann, T. (2026). *Leveraged Loan Factors* (Version v2026.11) [Computer software]. Zenodo.
+> https://doi.org/10.5281/zenodo.24114955
+
+The "Cite this repository" button on GitHub (from `CITATION.cff`) provides APA and BibTeX formats.
