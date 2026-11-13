@@ -7,8 +7,8 @@ abstract: >-
 authors:
   - family-names: "Mählmann"
     given-names: "Thomas"
-version: "v2026.11"
-date-released: "2026-11-10"
+version: "v2026.12"
+date-released: "2026-11-13"
 license: MIT
 repository-code: "https://github.com/thomasmaehlmann-ctrl/leveraged-loan-factors"
 doi: "10.5281/zenodo.24114954"
@@ -16,9 +16,6 @@ identifiers:
   - type: doi
     value: "10.5281/zenodo.24114954"
     description: "Concept DOI of the software (all versions, resolves to the latest)"
-  - type: doi
-    value: "10.5281/zenodo.24114955"
-    description: "DOI of software version v2026.11"
 keywords:
   - leveraged loans
   - factor investing
@@ -30,7 +27,7 @@ references:
     authors:
       - family-names: "Mählmann"
         given-names: "Thomas"
-    version: "2026.11"
+    version: "2026.12"
     doi: "10.5281/zenodo.24113424"
     url: "https://doi.org/10.5281/zenodo.24113424"
     publisher:

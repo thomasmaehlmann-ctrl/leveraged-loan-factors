@@ -10,11 +10,11 @@ Leveraged loans are private, over-the-counter instruments, and loan-level prices
 available from commercial data vendors. US registered funds, however, report every loan they hold,
 with notional and fair value, to the SEC. Aggregating these reports across funds yields a monthly
 price panel that tracks the Morningstar LSTA US Leveraged Loan Index with a monthly return
-correlation of 0.995 (2019-10 to 2026-04). This repository turns these public filings into a
+correlation of 0.995 (2019-10 to 2026-07). This repository turns these public filings into a
 factor database in the spirit of [JKP Factors](https://jkpfactors.com).
 
-- **Data releases:** Zenodo, [doi:10.5281/zenodo.24113424](https://doi.org/10.5281/zenodo.24113424) (all versions, resolves to the latest release); current release v2026.11: [doi:10.5281/zenodo.24113425](https://doi.org/10.5281/zenodo.24113425)
-- **Software (this repository):** Zenodo, [doi:10.5281/zenodo.24114954](https://doi.org/10.5281/zenodo.24114954) (all versions); v2026.11: [doi:10.5281/zenodo.24114955](https://doi.org/10.5281/zenodo.24114955)
+- **Data releases:** Zenodo, [doi:10.5281/zenodo.24113424](https://doi.org/10.5281/zenodo.24113424) (all versions, resolves to the latest release); current release v2026.12: [doi:10.5281/zenodo.24202315](https://doi.org/10.5281/zenodo.24202315)
+- **Software (this repository):** Zenodo, [doi:10.5281/zenodo.24114954](https://doi.org/10.5281/zenodo.24114954) (all versions, resolves to the latest release)
 - **Author:** Thomas Mählmann
 - **Licenses:** code MIT, data CC BY 4.0
 
@@ -53,13 +53,27 @@ SEC N-PORT data sets ─► nport_loans.py ─► nport_rekey.py ─► nport_lo
 | 4 | `loan_characteristics.py` | Investable universe, repayment assumption, default model, all factor signals |
 | 5 | `export_database.py` | Portfolio returns for the full specification grid, summary statistics, release files |
 
-Analysis and validation (optional):
+Analysis (optional), in `pipeline/`:
 
 | Script | Purpose |
 |---|---|
 | `factor_portfolios.py` | Factor tables, Dimson alphas and panel regressions for a single specification |
+
+Validation and paper tables, in `validation/` (run from the repository root):
+
+| Script | Purpose |
+|---|---|
+| `benchmark_validation.py` | N-PORT benchmark vs. the Morningstar LSTA US Leveraged Loan Index (index levels must be provided by the user) |
+| `markit_to_panel.py`, `make_nport_common.py`, `markit_comparison.py` | Comparison with IHS Markit dealer quotes at the loan, benchmark and factor level (requires licensed Markit data) |
 | `alpha_by_horizon.py` | Alpha by month after portfolio formation |
-| `benchmark_validation.py` | Comparison of the N-PORT benchmark with the LSTA index (index levels must be provided by the user) |
+| `describe_panel.py` | Descriptive statistics of the loan panel |
+
+Website, in `website/`:
+
+| Script | Purpose |
+|---|---|
+| `make_web_data.py` | Data files for the analysis page, "Factors to watch" and release information of loanfactors.org |
+| `make_web_charts.py` | Charts of loanfactors.org |
 
 ## Quick start
 
@@ -128,13 +142,13 @@ See `docs/METHODOLOGY.md` and the methods paper for details and known limitation
 
 Please cite the data release you use and the methods paper:
 
-> Mählmann, T. (2026). *Leveraged Loan Factors* (Version 2026.11) [Data set]. Zenodo.
-> https://doi.org/10.5281/zenodo.24113425
+> Mählmann, T. (2026). *Leveraged Loan Factors* (Version 2026.12) [Data set]. Zenodo.
+> https://doi.org/10.5281/zenodo.24202315
 
 To always refer to the latest release, use the concept DOI https://doi.org/10.5281/zenodo.24113424.
 If you use or adapt the pipeline, please also cite the software:
 
-> Mählmann, T. (2026). *Leveraged Loan Factors* (Version v2026.11) [Computer software]. Zenodo.
-> https://doi.org/10.5281/zenodo.24114955
+> Mählmann, T. (2026). *Leveraged Loan Factors* (Version v2026.12) [Computer software]. Zenodo.
+> https://doi.org/10.5281/zenodo.24114954
 
 The "Cite this repository" button on GitHub (from `CITATION.cff`) provides APA and BibTeX formats.

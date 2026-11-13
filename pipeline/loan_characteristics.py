@@ -103,6 +103,7 @@ MIN_COMBI_JPM = 6            # at least 6 of the 8 signals available
 PD_HORIZON_M = 12            # forecast horizon in months
 PD_MIN_EVENTS = 100          # minimum number of defaults in the estimation window
 PD_RIDGE = 1e-4              # L2 penalty (on standardized variables)
+EXT_LGD = 0.40               # LGD used with an external PD (--pd-file)
 
 
 def month_end(s: pd.Series) -> pd.Series:
@@ -272,6 +273,12 @@ def main() -> None:
     ap = argparse.ArgumentParser(description="Factor characteristics per loan and period")
     ap.add_argument("--freq", choices=["M", "Q"], default="M")
     ap.add_argument("--dir", default="nport_out")
+    ap.add_argument("--cer-stm-file", default=None,
+                    help="optional: external spread-to-maturity for the CER only (Parquet with LOAN_KEY, MONTH_END, "
+                         "stm_cer in %% p.a.), e.g. Markit's STM; signals keep the pipeline's own STM")
+    ap.add_argument("--pd-file", default=None,
+                    help="optional: external 12-month PD (Parquet with LOAN_KEY, MONTH_END, pd in decimals), "
+                         "e.g. the Markit PD; replaces the logit default model")
     ap.add_argument("--market-csv", default=None,
                     help="optional: own market return (columns date, monthly excess return in decimals)")
     ap.add_argument("--keys", choices=["identified", "lx", "all"], default="identified",
@@ -301,7 +308,14 @@ def main() -> None:
     df["price_ret"] = np.log(df["price"] / shifted(df, "price", 1, step))
     df["ret"] = df["cer"].where(~df["return_outlier"].fillna(False))
     df["tr"] = df["total_return"].where(~df["return_outlier"].fillna(False))   # total return without base rate deduction
-    stm_lag = shifted(df, "stm", 1, step)
+    stm_src = "stm"
+    if args.cer_stm_file:                      # e.g. Markit's own spread-to-maturity, used only for ret_paper
+        ext = pd.read_parquet(args.cer_stm_file, columns=["LOAN_KEY", "MONTH_END", "stm_cer"])
+        ext["MONTH_END"] = month_end(ext["MONTH_END"])
+        df = df.merge(ext.drop_duplicates(["LOAN_KEY", "MONTH_END"]), on=["LOAN_KEY", "MONTH_END"], how="left")
+        stm_src = "stm_cer"
+        print(f"CER (ret_paper) with external STM from {args.cer_stm_file}")
+    stm_lag = shifted(df, stm_src, 1, step)
     df["ret_paper"] = (stm_lag / 100 * step / 12 + df["price_ret"]).where(df["ret"].notna())
     # --- Repayment assumption: additional return row for loans that were probably repaid
     df["exit_row"] = False
@@ -360,7 +374,13 @@ def main() -> None:
                       & df["margin_plausible"].fillna(False) & df["stm"].notna())
 
     # --- Value (EL): excess spread over the expected loss
-    el = expected_loss_value(df)
+    if args.pd_file:
+        el = pd.read_parquet(args.pd_file, columns=["LOAN_KEY", "MONTH_END", "pd"]).rename(columns={"pd": "pd_hat"})
+        el["MONTH_END"] = month_end(el["MONTH_END"])
+        el["lgd_hat"] = EXT_LGD
+        print(f"PD: external file {args.pd_file} ({el['pd_hat'].notna().sum():,} observations), LGD {EXT_LGD:.0%}")
+    else:
+        el = expected_loss_value(df)
     df = df.merge(el, on=["LOAN_KEY", "MONTH_END"], how="left")
     df["value_el"] = df["stm"] - df["pd_hat"] * df["lgd_hat"] * 100
     df["value_pd"] = df["stm"] / df["pd_hat"].clip(lower=1e-4)

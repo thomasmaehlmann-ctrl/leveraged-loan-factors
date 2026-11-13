@@ -94,7 +94,7 @@ t-statistics use Newey-West standard errors with three lags.
 
 The equal-weighted market index (total return, universe as above) has a monthly correlation of
 0.995 and a tracking error of 0.6% p.a. with the Morningstar LSTA US Leveraged Loan Index
-(2019-10 to 2026-04). The lagged index beta is close to zero, i.e. the fund fair values do not lag
+(2019-10 to 2026-07). The lagged index beta is close to zero, i.e. the fund fair values do not lag
 the index.
 
 ## 10. Versioning
