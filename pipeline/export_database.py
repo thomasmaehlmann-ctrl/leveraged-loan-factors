@@ -282,7 +282,8 @@ The equal-weighted market index has a monthly correlation of {corr} with the Mor
 Leveraged Loan Index over {corr_period}.
 
 ## Citation and license
-Please cite: Mählmann, T., Leveraged Loan Factors, release v{version} ({year}), {doi}.
+Please cite the methods paper, Mählmann, T. (2026), Leveraged Loan Factors from Public Data, working paper, SSRN, https://papers.ssrn.com/sol3/papers.cfm?abstract_id=7704758,
+and the data release: Mählmann, T., Leveraged Loan Factors, release v{version} ({year}), {doi}.
 Data: CC BY 4.0. Code: MIT License, {repo}.
 """
 

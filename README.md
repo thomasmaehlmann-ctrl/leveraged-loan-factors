@@ -15,6 +15,7 @@ factor database in the spirit of [JKP Factors](https://jkpfactors.com).
 
 - **Data releases:** Zenodo, [doi:10.5281/zenodo.24113424](https://doi.org/10.5281/zenodo.24113424) (all versions, resolves to the latest release); current release v2026.12: [doi:10.5281/zenodo.24202315](https://doi.org/10.5281/zenodo.24202315)
 - **Software (this repository):** Zenodo, [doi:10.5281/zenodo.24114954](https://doi.org/10.5281/zenodo.24114954) (all versions, resolves to the latest release)
+- **Methods paper:** [Leveraged Loan Factors from Public Data](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=7704758) (SSRN)
 - **Author:** Thomas Mählmann
 - **Licenses:** code MIT, data CC BY 4.0
 
@@ -125,7 +126,7 @@ implementation lag (0, 1 month) × return type (`excess`, `total`).
 - **Default model:** logit model on public loan characteristics, expanding window, used for the
   Value (PD) and Quality (PD) signals.
 
-See `docs/METHODOLOGY.md` and the methods paper for details and known limitations.
+See `docs/METHODOLOGY.md` and the [methods paper](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=7704758) for details and known limitations.
 
 ## Known limitations
 
@@ -140,7 +141,12 @@ See `docs/METHODOLOGY.md` and the methods paper for details and known limitation
 
 ## Citation
 
-Please cite the data release you use and the methods paper:
+Please cite the methods paper:
+
+> Mählmann, T. (2026). Leveraged Loan Factors from Public Data. Working paper, SSRN.
+> https://papers.ssrn.com/sol3/papers.cfm?abstract_id=7704758
+
+and the data release you use:
 
 > Mählmann, T. (2026). *Leveraged Loan Factors* (Version 2026.12) [Data set]. Zenodo.
 > https://doi.org/10.5281/zenodo.24202315

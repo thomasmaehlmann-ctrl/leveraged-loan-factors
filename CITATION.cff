@@ -21,6 +21,17 @@ keywords:
   - factor investing
   - private debt
   - SEC Form N-PORT
+preferred-citation:
+  type: article
+  title: "Leveraged Loan Factors from Public Data"
+  authors:
+    - family-names: "Mählmann"
+      given-names: "Thomas"
+  year: 2026
+  notes: "Working paper"
+  publisher:
+    name: "SSRN"
+  url: "https://papers.ssrn.com/sol3/papers.cfm?abstract_id=7704758"
 references:
   - type: data
     title: "Leveraged Loan Factors"

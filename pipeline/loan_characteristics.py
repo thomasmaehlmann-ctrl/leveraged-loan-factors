@@ -106,6 +106,11 @@ PD_RIDGE = 1e-4              # L2 penalty (on standardized variables)
 EXT_LGD = 0.40               # LGD used with an external PD (--pd-file)
 
 
+def as_bool(s: pd.Series) -> pd.Series:
+    """Boolean series with missing values as False (avoids pandas downcasting warnings for object columns)."""
+    return s.map(lambda v: bool(v) if v is not None and v == v else False).astype(bool)
+
+
 def month_end(s: pd.Series) -> pd.Series:
     return pd.to_datetime(s).dt.normalize() + pd.offsets.MonthEnd(0)
 
@@ -127,7 +132,7 @@ def residual_value(df: pd.DataFrame) -> pd.Series:
     x = pd.DataFrame({
         "log_margin": np.log(df["margin"].where(df["margin"] > 0)),
         "years_left": (df["maturity"] - df["MONTH_END"]).dt.days / 365.25,
-        "pik": df["any_pik"].fillna(False).astype(float),
+        "pik": as_bool(df["any_pik"]).astype(float),
         "log_funds": np.log(df["n_funds"].clip(lower=1)),
         "log_par": np.log(df["par_total"].where(df["par_total"] > 0)),
         "fv3": (df["fv_level_mode"].astype(str) == "3").astype(float),
@@ -148,7 +153,7 @@ def pd_features(df: pd.DataFrame) -> pd.DataFrame:
     return pd.DataFrame({
         "price": df["price"] / 100,
         "margin": df["margin"],
-        "pik": df["any_pik"].fillna(False).astype(float),
+        "pik": as_bool(df["any_pik"]).astype(float),
         "log_funds": np.log(df["n_funds"].clip(lower=1)),
         "fv3": (df["fv_level_mode"].astype(str) == "3").astype(float),
         "years_left": ((df["maturity"] - df["MONTH_END"]).dt.days / 365.25).clip(0, 10),
@@ -166,7 +171,7 @@ def auc(y: np.ndarray, p: np.ndarray) -> float:
 def expected_loss_value(df: pd.DataFrame) -> pd.DataFrame:
     """Logit default model with expanding window, re-estimated quarterly; returns pd_hat, lgd_hat."""
     d = df.sort_values(["LOAN_KEY", "MONTH_END"]).copy()
-    d["dflt"] = d["any_default"].fillna(False).astype(bool)
+    d["dflt"] = as_bool(d["any_default"])
     # next reported default after t (strictly later)
     s = d["MONTH_END"].where(d["dflt"])
     nxt = s.groupby(d["LOAN_KEY"]).shift(-1)
@@ -306,8 +311,8 @@ def main() -> None:
 
     # --- Returns
     df["price_ret"] = np.log(df["price"] / shifted(df, "price", 1, step))
-    df["ret"] = df["cer"].where(~df["return_outlier"].fillna(False))
-    df["tr"] = df["total_return"].where(~df["return_outlier"].fillna(False))   # total return without base rate deduction
+    df["ret"] = df["cer"].where(~as_bool(df["return_outlier"]))
+    df["tr"] = df["total_return"].where(~as_bool(df["return_outlier"]))   # total return without base rate deduction
     stm_src = "stm"
     if args.cer_stm_file:                      # e.g. Markit's own spread-to-maturity, used only for ret_paper
         ext = pd.read_parquet(args.cer_stm_file, columns=["LOAN_KEY", "MONTH_END", "stm_cer"])
@@ -323,7 +328,7 @@ def main() -> None:
     end = df["MONTH_END"].max()
     cand = (df["MONTH_END"].eq(last) & (df["MONTH_END"] <= end - pd.DateOffset(months=EXIT_BUFFER_M))
             & df["price"].between(EXIT_MIN_PRICE, EXIT_MAX_PRICE) & (df["n_funds"] >= EXIT_MIN_FUNDS)
-            & ~df["any_default"].fillna(False).astype(bool)
+            & ~as_bool(df["any_default"])
             & df["coupon"].notna())
     ex = df.loc[cand, ["LOAN_KEY", "MONTH_END", "key_type", "price", "coupon", "base", "stm"]].copy()
     ex_rows = pd.DataFrame({
@@ -396,7 +401,7 @@ def main() -> None:
             mkt = pd.Series(mkt.values, index=mk["date"]).groupby(level=0).last()
             print("Market proxy: own series from", args.market_csv)
         else:
-            prev_uni = shifted(df, "universe", 1, step).fillna(False).astype(bool)
+            prev_uni = as_bool(shifted(df, "universe", 1, step))
             mkt = df.loc[prev_uni].groupby("MONTH_END")["ret"].mean()
             print("Market proxy: equal-weighted return of the universe (prior month)")
         mm = rolling_market_model(df, mkt)

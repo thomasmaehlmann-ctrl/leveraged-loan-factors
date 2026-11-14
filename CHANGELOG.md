@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+- Methods paper on SSRN added to README, CITATION.cff and the release README template
+- New validation script `validation/momentum_by_price.py` (momentum among loans below and near par)
+- `loan_characteristics.py`: pandas FutureWarnings removed (results unchanged)
+
 ## v2026.12
 - Data: SEC data set 2026 Q3 added; sample extended to July 2026 (data release doi:10.5281/zenodo.24202315)
 - `loan_characteristics.py`: options `--pd-file` (external default probability) and `--cer-stm-file` (external spread-to-maturity for the CER)
