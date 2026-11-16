@@ -1,6 +1,9 @@
 # Changelog
 
-## Unreleased
+## v2026.12.1
+- New folder `direct_lending/`: Registered Fund Direct Lending Index (N-CEN advisers, position panel, index, robustness, loan-level validation, release export)
+- `website/make_dl_web.py`: data and charts for the direct lending section of loanfactors.org
+- Documentation: `docs/DIRECT_LENDING.md`
 - Methods paper on SSRN added to README, CITATION.cff and the release README template
 - New validation script `validation/momentum_by_price.py` (momentum among loans below and near par)
 - `loan_characteristics.py`: pandas FutureWarnings removed (results unchanged)

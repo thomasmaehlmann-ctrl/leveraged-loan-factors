@@ -139,6 +139,38 @@ See `docs/METHODOLOGY.md` and the [methods paper](https://papers.ssrn.com/sol3/p
 - Loan-level data are not published because some identifiers (LoanX IDs, CUSIPs) are proprietary;
   they can be reproduced from the SEC data with this pipeline.
 
+## Direct lending: Registered Fund Direct Lending Index
+
+The folder `direct_lending/` builds a quarterly return index of US direct lending from the same N-PORT data:
+middle market loans held by US registered closed-end funds (interval, tender offer and listed credit funds).
+Methodology: [docs/DIRECT_LENDING.md](docs/DIRECT_LENDING.md) and https://loanfactors.org/dl-methodology.html.
+Data release: Zenodo, [doi:10.5281/zenodo.24280967](https://doi.org/10.5281/zenodo.24280967) (all versions); v2026.12: [doi:10.5281/zenodo.24280968](https://doi.org/10.5281/zenodo.24280968).
+
+| Script | Purpose |
+|---|---|
+| `ncen_advisers.py` | Investment adviser and fund type of each fund from the SEC Form N-CEN data sets |
+| `dl_feasibility.py` | Feasibility analysis: size, ownership and concentration of candidate direct loans |
+| `dl_panel.py` | Panel of direct lending positions (fund x borrower x calendar quarter-end) |
+| `dl_index.py` | Position returns, indices, components and credit health barometer; comparison with external benchmarks (optional) |
+| `dl_robustness.py` | Sensitivity variants and desmoothing |
+| `dl_crossmanager.py` | Loan-level validation: the same loan valued by different managers |
+| `dl_export.py` | Versioned data release (CSV files, metadata, README, checksums) |
+
+Run from the repository root after the leveraged loan pipeline (`nport_out/holdings_v2` is required):
+
+```
+python direct_lending/ncen_advisers.py --user-agent "Name name@university.edu"
+python direct_lending/dl_panel.py
+python direct_lending/dl_index.py
+python direct_lending/dl_robustness.py
+python direct_lending/dl_export.py --version 2026.12 --zip
+python website/make_dl_web.py --release releases/dlindex_v2026.12 --site loanfactors.org
+```
+
+Comparisons with the Cliffwater Direct Lending Index (`--cdli`, `--cdli-annual`) require index data that users
+must obtain themselves; they are not part of this repository or the data releases. "Cliffwater Direct Lending
+Index" and "CDLI" are trademarks of Cliffwater LLC; the index is independent of and not endorsed by Cliffwater.
+
 ## Citation
 
 Please cite the methods paper:
@@ -158,3 +190,9 @@ If you use or adapt the pipeline, please also cite the software:
 > https://doi.org/10.5281/zenodo.24114954
 
 The "Cite this repository" button on GitHub (from `CITATION.cff`) provides APA and BibTeX formats.
+
+
+For the direct lending index:
+
+> Mählmann, T. (2026). *Registered Fund Direct Lending Index* (Version 2026.12) [Data set]. Zenodo.
+> https://doi.org/10.5281/zenodo.24280968
