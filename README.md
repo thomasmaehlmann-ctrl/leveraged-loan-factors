@@ -230,6 +230,9 @@ The "Cite this repository" button on GitHub (from `CITATION.cff`) provides APA a
 
 For the direct lending indices:
 
+> Mählmann, T. (2026). Direct Lending Returns from Public Data: An Open Index and What It Reveals about Private
+> Credit Valuations. Working paper, SSRN. https://ssrn.com/abstract=7733980
+
 > Mählmann, T. (2026). *OpenDL US: Registered Fund Direct Lending Index* (Version 2026.12) [Data set]. Zenodo.
 > https://doi.org/10.5281/zenodo.24280968
 
