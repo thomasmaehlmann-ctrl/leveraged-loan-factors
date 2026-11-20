@@ -178,9 +178,9 @@ def main() -> None:
             j = pd.concat([ix[k]["total"] * 100, c["total"]], axis=1, sort=True).dropna()
             ji = pd.concat([(ix[k]["income"] + ix[k].get("accretion", 0) * (k != "EW managers")) * 100,
                             c["income"]], axis=1, sort=True).dropna()
-            val[code] = {"quarters": int(len(j)), "corr_total": round(float(j.iloc[:, 0].corr(j.iloc[:, 1])), 3),
+            val[code] = {"quarters": int(len(j)), "corr_total": round(float(j.iloc[:, 0].corr(j.iloc[:, 1])), 4),
                          "mean_diff_total_pp_per_quarter": round(float((j.iloc[:, 0] - j.iloc[:, 1]).mean()), 3),
-                         "corr_income": round(float(ji.iloc[:, 0].corr(ji.iloc[:, 1])), 3) if len(ji) >= 4 else None}
+                         "corr_income": round(float(ji.iloc[:, 0].corr(ji.iloc[:, 1])), 4) if len(ji) >= 4 else None}
     if args.cdli_annual:
         ca = pd.read_csv(args.cdli_annual).set_index("year")["total"]
         for k, code in INDEX_NAMES.items():
@@ -203,7 +203,7 @@ def main() -> None:
     summ = {code: {"annualized_total_pct": round(float(((1 + ix[k]["total"]).prod() ** (4 / len(ix[k])) - 1) * 100), 2),
                    "volatility_pct_pa": round(float(ix[k]["total"].std() * 200), 2)} for k, code in INDEX_NAMES.items()}
     meta = {
-        "name": args.name, "version": args.version, "doi": args.doi, "created": date.today().isoformat(),
+        "name": args.name, "short_name": "OpenDL US", "version": args.version, "doi": args.doi, "created": date.today().isoformat(),
         "frequency": "quarterly (calendar quarter-ends)", "first_return_quarter": str(first),
         "last_return_quarter": str(last),
         "source": "SEC Form N-PORT (registered closed-end funds filing Form N-2; advisers from Form N-CEN)",

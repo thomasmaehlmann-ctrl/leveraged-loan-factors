@@ -1,5 +1,12 @@
 # Changelog
 
+## v2026.12.2
+- OpenDL Europe (BDC European Direct Lending Index): BDC holdings from the SEC Financial Statement and Notes data sets (`bdc_panel.py`, `bdc_link.py`), index, diagnostics, robustness, loan-level validation and release export (`eu_*.py`)
+- `pipeline/nport_loans.py`: option `--europe` (non-USD loans and USD loans of European borrowers, with country and exchange rate)
+- `website/make_dl_web.py`: data and charts for OpenDL Europe and the overview of both indices
+- OpenDL US: short name in the release metadata
+- Documentation: `docs/OPENDL_EUROPE.md`
+
 ## v2026.12.1
 - New folder `direct_lending/`: Registered Fund Direct Lending Index (N-CEN advisers, position panel, index, robustness, loan-level validation, release export)
 - `website/make_dl_web.py`: data and charts for the direct lending section of loanfactors.org

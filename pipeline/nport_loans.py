@@ -52,10 +52,13 @@ CHUNKSIZE = 500_000
 HOLDING_COLS = [
     "ACCESSION_NUMBER", "HOLDING_ID", "ISSUER_NAME", "ISSUER_TITLE", "ISSUER_CUSIP",
     "BALANCE", "UNIT", "CURRENCY_CODE", "CURRENCY_VALUE", "PAYOFF_PROFILE",
-    "ASSET_CAT", "FAIR_VALUE_LEVEL",
+    "ASSET_CAT", "FAIR_VALUE_LEVEL", "EXCHANGE_RATE", "INVESTMENT_COUNTRY",
 ]
 KEEP_HOLD = ["ACCESSION_NUMBER", "HOLDING_ID", "ISSUER_NAME", "ISSUER_TITLE",
-             "ISSUER_CUSIP", "BALANCE", "CURRENCY_CODE", "CURRENCY_VALUE", "FAIR_VALUE_LEVEL"]
+             "ISSUER_CUSIP", "BALANCE", "CURRENCY_CODE", "CURRENCY_VALUE", "FAIR_VALUE_LEVEL",
+             "EXCHANGE_RATE", "INVESTMENT_COUNTRY"]
+EUROPE = {"AT", "BE", "BG", "HR", "CY", "CZ", "DK", "EE", "FI", "FR", "DE", "GR", "HU", "IE", "IT", "LV", "LT",
+          "LU", "MT", "NL", "PL", "PT", "RO", "SK", "SI", "ES", "SE", "GB", "NO", "CH", "IS", "LI", "JE", "GG", "IM"}
 IDENT_COLS = ["HOLDING_ID", "IDENTIFIER_ISIN", "OTHER_IDENTIFIER", "OTHER_IDENTIFIER_DESC"]
 DEBT_COLS = ["HOLDING_ID", "MATURITY_DATE", "COUPON_TYPE", "ANNUALIZED_RATE",
              "IS_DEFAULT", "IS_ANY_PORTION_INTEREST_PAID"]
@@ -69,7 +72,7 @@ OUT_STR = ["ACCESSION_NUMBER", "FUND_KEY", "SERIES_NAME", "LOAN_KEY", "KEY_TYPE"
 OUT_COLS = OUT_STR + ["HOLDING_ID", "REPORT_DATE", "FILING_DATE", "MONTH_END",
                       "MATURITY_DATE", "BALANCE", "CURRENCY_VALUE", "PRICE",
                       "ANNUALIZED_RATE", "IS_DEFAULT", "IS_PIK",
-                      "IS_UNFUNDED_OR_REVOLVER", "PRICE_PLAUSIBLE"]
+                      "IS_UNFUNDED_OR_REVOLVER", "PRICE_PLAUSIBLE", "EXCHANGE_RATE", "INVESTMENT_COUNTRY"]
 
 UNFUNDED_RE = re.compile(
     r"DELAYED\s*DRAW|\bDDTL\b|\bDD\s*TL\b|UNFUNDED|REVOLV|\bRCF\b|\bLOC\b|LETTER OF CREDIT",
@@ -205,7 +208,11 @@ def process_quarter(zip_path: Path, q: str, qdir: Path, usd_only: bool) -> None:
             m = (col(chunk, "ASSET_CAT").str.upper().eq("LON")
                  & col(chunk, "UNIT").str.upper().eq("PA")
                  & col(chunk, "PAYOFF_PROFILE").fillna("Long").str.lower().eq("long"))
-            if usd_only:
+            if usd_only == "europe":   # non-USD loans and USD loans of European borrowers
+                cur = col(chunk, "CURRENCY_CODE").fillna("").str.upper()
+                cty = col(chunk, "INVESTMENT_COUNTRY").fillna("").str.upper()
+                m &= cur.ne("USD") | cty.isin(EUROPE)
+            elif usd_only:
                 m &= col(chunk, "CURRENCY_CODE").str.upper().eq("USD")
             c = chunk.loc[m, [x for x in KEEP_HOLD if x in chunk]].copy()
             del chunk
@@ -214,6 +221,10 @@ def process_quarter(zip_path: Path, q: str, qdir: Path, usd_only: bool) -> None:
             c["HOLDING_ID"] = to_num(c["HOLDING_ID"])
             c["BALANCE"] = to_num(c["BALANCE"])
             c["CURRENCY_VALUE"] = to_num(c["CURRENCY_VALUE"])
+            for extra in ("EXCHANGE_RATE", "INVESTMENT_COUNTRY"):
+                if extra not in c:
+                    c[extra] = np.nan
+            c["EXCHANGE_RATE"] = to_num(c["EXCHANGE_RATE"])
             c = c[c["HOLDING_ID"].notna() & c["BALANCE"].gt(0)]
             c["HOLDING_ID"] = c["HOLDING_ID"].astype("int64")
             id_arrays.append(c["HOLDING_ID"].to_numpy())
@@ -290,6 +301,7 @@ def process_quarter(zip_path: Path, q: str, qdir: Path, usd_only: bool) -> None:
               .join(debt, on="HOLDING_ID")
               .join(meta, on="ACCESSION_NUMBER"))
 
+        s["MATURITY_DATE"] = pd.to_datetime(s["MATURITY_DATE"], errors="coerce")
         s["PRICE"] = (s["CURRENCY_VALUE"] / s["BALANCE"] * 100).astype("float32")
         s["PRICE_PLAUSIBLE"] = s["PRICE"].between(1, 150)
         s["IS_UNFUNDED_OR_REVOLVER"] = (
@@ -445,6 +457,9 @@ def main() -> None:
     ap.add_argument("--data-dir", default="nport_data", help="folder for ZIP files")
     ap.add_argument("--out-dir", default="nport_out", help="folder for results")
     ap.add_argument("--all-currencies", action="store_true", help="not only USD loans")
+    ap.add_argument("--europe", action="store_true",
+                    help="only non-USD loans and USD loans of European borrowers (use a separate --out-dir)")
+    ap.add_argument("--skip-panel", action="store_true", help="only extract holdings, do not build the price panel")
     ap.add_argument("--include-unfunded", action="store_true",
                     help="keep unfunded/DDTL/revolver tranches in the panel")
     ap.add_argument("--csv", action="store_true", help="also save the panel as CSV")
@@ -466,11 +481,14 @@ def main() -> None:
         zp = download(q, data_dir, args.user_agent)
         if zp is None:
             continue
-        process_quarter(zp, q, hold_dir / q, usd_only=not args.all_currencies)
+        process_quarter(zp, q, hold_dir / q, usd_only="europe" if args.europe else (not args.all_currencies))
         if not args.keep_zips:
             zp.unlink(missing_ok=True)
             print(f"[{q}] ZIP deleted (disk space)")
 
+    if args.skip_panel or args.europe:
+        print(f"Holdings saved in {hold_dir}; price panel not built (--skip-panel / --europe).")
+        return
     build_outputs(hold_dir, out_dir, args.include_unfunded, args.csv,
                   args.export_holdings, args.memory_limit, args.temp_dir)
 

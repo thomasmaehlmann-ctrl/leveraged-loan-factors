@@ -139,7 +139,7 @@ See `docs/METHODOLOGY.md` and the [methods paper](https://papers.ssrn.com/sol3/p
 - Loan-level data are not published because some identifiers (LoanX IDs, CUSIPs) are proprietary;
   they can be reproduced from the SEC data with this pipeline.
 
-## Direct lending: Registered Fund Direct Lending Index
+## Direct lending: OpenDL US (Registered Fund Direct Lending Index)
 
 The folder `direct_lending/` builds a quarterly return index of US direct lending from the same N-PORT data:
 middle market loans held by US registered closed-end funds (interval, tender offer and listed credit funds).
@@ -171,6 +171,42 @@ Comparisons with the Cliffwater Direct Lending Index (`--cdli`, `--cdli-annual`)
 must obtain themselves; they are not part of this repository or the data releases. "Cliffwater Direct Lending
 Index" and "CDLI" are trademarks of Cliffwater LLC; the index is independent of and not endorsed by Cliffwater.
 
+## Direct lending: OpenDL Europe (BDC European Direct Lending Index)
+
+OpenDL Europe measures European direct lending (loans in EUR, GBP and other European currencies) from the
+XBRL-tagged schedules of investments of US business development companies (BDCs), published by the SEC in the
+Financial Statement and Notes data sets. Data release: Zenodo,
+[doi:10.5281/zenodo.24396813](https://doi.org/10.5281/zenodo.24396813) (all versions). Methodology:
+[docs/OPENDL_EUROPE.md](docs/OPENDL_EUROPE.md) and https://loanfactors.org/dl-methodology.html#europe.
+
+| Script (in `direct_lending/`) | Purpose |
+|---|---|
+| `bdc_pilot.py` | Reads the Financial Statement and Notes data sets (old and new format); pilot counts of European holdings |
+| `bdc_samples.py` | Sample of position identifiers per BDC (for developing the parser) |
+| `bdc_panel.py` | Holdings of all BDCs: subtotals, equity and cash removed; instrument, currency, position key, FX conversion |
+| `bdc_link.py` | Re-keying, subtotal check, currency correction, coupon and spread from identifiers, linking of renamed positions |
+| `bdc_tracking.py` | Diagnostics: positions found again in the next quarter |
+| `eu_index.py` | OpenDL Europe: returns, exits, recoveries, weighting, barometer, comparison with an external benchmark (optional) |
+| `eu_diag.py`, `eu_exits.py` | Diagnostics: low prices, extreme returns, exits checked against other managers |
+| `eu_robustness.py` | Sensitivity variants |
+| `eu_loanlevel.py` | Loan-level validation: different managers; same loans in N-PORT and BDC data |
+| `eu_export.py` | Versioned data release |
+| `eu_feasibility.py` | Feasibility of European indices from N-PORT (registered funds) |
+
+Run from a working folder that contains the scripts of `direct_lending/` and the data sets in `fsn_data/`
+(quarterly files up to 2025 Q3, monthly files afterwards):
+
+```
+python bdc_panel.py --user-agent "Name name@university.edu"
+python bdc_link.py
+python eu_index.py --min-positions 10
+python eu_export.py --version 2026.12 --zip
+python website/make_dl_web.py --release releases/dlindex_v2026.12 --eu-release releases/opendl_europe_v2026.12 --site loanfactors.org
+```
+
+Comparisons with the S&P Lincoln European Senior Debt Index (`--esdi`) require index returns that users must
+compile themselves; they are not part of this repository or the data releases.
+
 ## Citation
 
 Please cite the methods paper:
@@ -192,7 +228,10 @@ If you use or adapt the pipeline, please also cite the software:
 The "Cite this repository" button on GitHub (from `CITATION.cff`) provides APA and BibTeX formats.
 
 
-For the direct lending index:
+For the direct lending indices:
 
-> Mählmann, T. (2026). *Registered Fund Direct Lending Index* (Version 2026.12) [Data set]. Zenodo.
+> Mählmann, T. (2026). *OpenDL US: Registered Fund Direct Lending Index* (Version 2026.12) [Data set]. Zenodo.
 > https://doi.org/10.5281/zenodo.24280968
+
+> Mählmann, T. (2026). *OpenDL Europe: BDC European Direct Lending Index* (Version 2026.12) [Data set]. Zenodo.
+> https://doi.org/10.5281/zenodo.24396814

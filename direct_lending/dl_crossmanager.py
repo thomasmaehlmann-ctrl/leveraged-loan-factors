@@ -15,6 +15,8 @@ the managers' marks (par-weighted price per manager, across its funds):
     3. Systematic differences by manager: mean deviation of a manager's mark from the average mark of the other
        managers on the same loan and quarter (positive = marks higher than the others)
     4. Non-accrual agreement: if one manager reports a loan as non-accrual (coupon zero), does the other?
+    5. Club loans: share of each manager's principal in borrowers also held by other managers, together with
+       position size, coupon, non-accrual share and share valued below 90 of its portfolio
 
 Input: dl_out/dl_positions.parquet (from dl_panel.py)
 Output: dl_out/crossmanager_*.csv
@@ -175,6 +177,30 @@ def main() -> None:
             msg += (f"; where only one reports it, median mark {dis['p_flag'].median():.1f} (with status) vs. "
                     f"{dis['p_other'].median():.1f} (without)")
         print(msg)
+    # 5. jointly held (club) loans by manager: share of a manager's principal in borrowers that other managers
+    #    also hold in the same quarter, with size, coupon and credit indicators of its portfolio
+    allp = pos.copy()
+    nm = allp.groupby(["borrower", "month_end"])["manager"].transform("nunique")
+    allp["club"] = nm >= 2
+    allp["na"] = allp["coupon"].fillna(0).le(0.01)
+    allp["b90"] = allp["price"] < 90
+    w = lambda x, col: (allp.loc[x.index, col] * allp.loc[x.index, "par"]).sum() / allp.loc[x.index, "par"].sum()
+    cm = allp.groupby("manager").agg(position_quarters=("par", "size"), par_bn=("par", lambda x: x.sum() / 1e9))
+    cm["club_share_par"] = allp.groupby("manager").apply(lambda g: g.loc[g["club"], "par"].sum() / g["par"].sum(), include_groups=False)
+    cm["median_position_mn"] = allp.groupby("manager")["par"].median() / 1e6
+    cm["median_coupon"] = allp.groupby("manager")["coupon"].median()
+    cm["non_accrual_share_par"] = allp.groupby("manager").apply(lambda g: g.loc[g["na"], "par"].sum() / g["par"].sum(), include_groups=False)
+    cm["below90_share_par"] = allp.groupby("manager").apply(lambda g: g.loc[g["b90"], "par"].sum() / g["par"].sum(), include_groups=False)
+    cm = cm[cm["position_quarters"] >= 100].sort_values("par_bn", ascending=False)
+    cm.to_csv(d / "crossmanager_club_by_manager.csv")
+    print("\n=== 5. Jointly held (club) loans and portfolio characteristics by manager (all quarters, managers with >= 100 position-quarters) ===")
+    print(cm.round(3).to_string())
+    others = allp[allp["manager"] != cm.index[0]] if len(cm) else allp
+    largest = allp[allp["manager"] == cm.index[0]] if len(cm) else allp.iloc[:0]
+    if len(largest):
+        print(f"Club share of principal: largest manager ({cm.index[0]}) {largest.loc[largest['club'], 'par'].sum() / largest['par'].sum():.1%}, "
+              f"all other managers {others.loc[others['club'], 'par'].sum() / others['par'].sum():.1%}")
+
     p.to_csv(d / "crossmanager_pairs.csv", index=False)
     print(f"\nSaved: {d}/crossmanager_levels.csv, crossmanager_by_manager.csv, crossmanager_pairs.csv")
 

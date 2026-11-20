@@ -44,12 +44,22 @@ references:
     publisher:
       name: "Zenodo"
   - type: data
-    title: "Registered Fund Direct Lending Index"
+    title: "OpenDL US: Registered Fund Direct Lending Index"
     authors:
       - family-names: "Mählmann"
         given-names: "Thomas"
     year: 2026
     version: "2026.12"
     doi: "10.5281/zenodo.24280967"
+    publisher:
+      name: "Zenodo"
+  - type: data
+    title: "OpenDL Europe: BDC European Direct Lending Index"
+    authors:
+      - family-names: "Mählmann"
+        given-names: "Thomas"
+    year: 2026
+    version: "2026.12"
+    doi: "10.5281/zenodo.24396813"
     publisher:
       name: "Zenodo"
