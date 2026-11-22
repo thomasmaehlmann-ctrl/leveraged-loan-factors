@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="index, follow">
+<title>Open Direct Lending Indices – loanfactors.org</title>
+<meta name="description" content="Open Direct Lending Indices: quarterly returns of European and US direct lending from public SEC filings.">
+<meta property="og:title" content="Open Direct Lending Indices – loanfactors.org">
+<meta property="og:description" content="Open Direct Lending Indices: quarterly returns of European and US direct lending from public SEC filings.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://loanfactors.org/direct-lending.html">
+<link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="style.css?v=e8ba3965">
+</head>
+<body>
+<header class="site-header"><div class="wrap">
+<a class="brand" href="index.html">loanfactors.org</a>
+<nav class="nav" aria-label="Main"><a href="leveraged-loans.html">Leveraged Loans</a><a href="direct-lending.html" aria-current="page">Direct Lending</a><a href="about.html">About</a></nav>
+</div></header>
+<nav class="subnav" aria-label="Section"><div class="wrap"><a href="direct-lending.html" aria-current="page">Overview</a><a href="dl-europe.html">Europe</a><a href="dl-us.html">US</a><a href="dl-analysis.html">Analysis</a><a href="dl-data.html">Data</a><a href="dl-methodology.html">Methodology</a></div></nav>
+<main><div class="wrap">
+
+<h1>Open Direct Lending Indices</h1>
+<p class="lede">Quarterly return indices of direct lending in Europe and the US, built entirely from public SEC
+filings with one common method. Open data, open code, updated every quarter.</p>
+
+<div class="cards">
+<a class="card" href="dl-europe.html">
+<h2>OpenDL Europe</h2>
+<p>BDC European Direct Lending Index: European middle market loans held by business development companies, in EUR, GBP and other
+European currencies. Last quarter (<span data-eu="last_quarter">–</span>): <span data-eu="last_q">–</span>;
+annualized since <span data-eu="start">Q2 2023</span>: <span data-eu="ann">–</span>.</p>
+<span class="more">Europe →</span>
+</a>
+<a class="card" href="dl-us.html">
+<h2>OpenDL US</h2>
+<p>Registered Fund Direct Lending Index: US middle market loans held by interval funds and other registered closed-end funds.
+Last quarter (<span data-dl="last_quarter">–</span>): <span data-dl="last_q">–</span>; annualized since
+<span data-dl="start">Q1 2022</span>: <span data-dl="ann">–</span>.</p>
+<span class="more">US →</span>
+</a>
+</div>
+
+<figure>
+<img src="img/dl_overview.svg" alt="Cumulative value of OpenDL Europe and OpenDL US" width="900" height="400">
+<figcaption>Value of 100 invested at the start of OpenDL Europe. Main indices, equal-weighted across managers;
+returns in loan currency, gross of fees and unlevered.</figcaption>
+</figure>
+
+<h2>Why open indices</h2>
+<p>Direct loans are not traded. Their returns are measured from the valuations that lenders report, and the
+established benchmarks rest on data that cannot be fully inspected. The OpenDL indices use only public filings:
+the holdings that US registered funds (interval and other closed-end funds) report in Form N-PORT for OpenDL US, and
+the machine-readable schedules of investments of business development companies (BDCs) for OpenDL Europe. Every
+number can be reproduced with the published code.</p>
+
+<div class="note"><p><strong>How to read the indices.</strong> Returns reflect fund valuations, not transaction
+prices, and are smoother than the returns of traded loans. OpenDL Europe covers European direct lending held by
+the BDCs of US and global managers; European lenders that do not file with the SEC are not included. See the
+<a href="dl-methodology.html">methodology</a>.</p></div>
+
+</div></main>
+<footer class="site-footer"><div class="wrap">
+<span>© 2026 Thomas Mählmann. Data CC BY 4.0, code MIT.</span>
+<nav aria-label="Footer"><a href="data.html#cite">Cite</a><a href="https://github.com/thomasmaehlmann-ctrl/leveraged-loan-factors">GitHub</a><a href="impressum.html">Legal notice</a><a href="datenschutz.html">Privacy</a></nav>
+</div></footer>
+<script src="js/meta.js?v=17bfea91" defer></script>
+<script src="js/dl.js?v=afa81b6e" defer></script>
+</body>
+</html>

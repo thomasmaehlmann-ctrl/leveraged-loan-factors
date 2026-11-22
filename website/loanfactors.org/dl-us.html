@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="index, follow">
+<title>OpenDL US – Registered Fund Direct Lending Index | loanfactors.org</title>
+<meta name="description" content="OpenDL US (Registered Fund Direct Lending Index): quarterly returns of US direct lending from public SEC filings of registered funds, with a credit health barometer.">
+<meta property="og:title" content="OpenDL US – Registered Fund Direct Lending Index | loanfactors.org">
+<meta property="og:description" content="OpenDL US (Registered Fund Direct Lending Index): quarterly returns of US direct lending from public SEC filings of registered funds, with a credit health barometer.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://loanfactors.org/dl-us.html">
+<link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="style.css?v=e8ba3965">
+</head>
+<body>
+<header class="site-header"><div class="wrap">
+<a class="brand" href="index.html">loanfactors.org</a>
+<nav class="nav" aria-label="Main"><a href="leveraged-loans.html">Leveraged Loans</a><a href="direct-lending.html" aria-current="page">Direct Lending</a><a href="about.html">About</a></nav>
+</div></header>
+<nav class="subnav" aria-label="Section"><div class="wrap"><a href="direct-lending.html">Overview</a><a href="dl-europe.html">Europe</a><a href="dl-us.html" aria-current="page">US</a><a href="dl-analysis.html">Analysis</a><a href="dl-data.html">Data</a><a href="dl-methodology.html">Methodology</a></div></nav>
+<main><div class="wrap">
+
+<h1>OpenDL US</h1>
+<p class="small">Registered Fund Direct Lending Index</p>
+<p class="lede">A quarterly return index of US direct lending, built entirely from public SEC filings of US
+registered closed-end funds: interval, tender offer and listed credit funds. Open data, open code,
+updated every quarter.</p>
+<div class="actions">
+<a class="btn btn-primary" href="dl-data.html#us">Download the data</a>
+<a class="btn btn-secondary" href="dl-analysis.html#us">Explore the index</a>
+<a class="btn btn-secondary" href="https://papers.ssrn.com/sol3/papers.cfm?abstract_id=7733980">Working paper</a>
+</div>
+
+<dl class="facts">
+<div><dt>Last quarter (<span data-dl="last_quarter">–</span>)</dt><dd data-dl="last_q">–</dd></div>
+<div><dt>Last four quarters</dt><dd data-dl="t4q">–</dd></div>
+<div><dt>Annualized since <span data-dl="start">Q1 2022</span></dt><dd data-dl="ann">–</dd></div>
+<div><dt>Managers / loans</dt><dd><span data-dl="managers">–</span> / <span data-dl="positions">–</span></dd></div>
+<div><dt>Non-accruals ex Cliffwater</dt><dd data-dl="na_ex">–</dd></div>
+</dl>
+
+<h2 class="takeaway">Direct lending returns from public data</h2>
+<p>The index follows the loans that registered funds report quarter by quarter in Form N-PORT: corporate loans
+without a public identifier, valued at fair value level 3. Returns combine interest income with the change in
+fund valuations, including losses on loans that default. The quarterly returns track the Cliffwater Direct
+Lending Index, which is built from business development companies, with a correlation of
+<span data-dl="corr_vw">0.93</span>.</p>
+<figure>
+<img src="img/dl_index.svg" alt="Cumulative value of the direct lending indices" width="900" height="420">
+<figcaption>Value of 100 invested at the end of 2021. Main index: equal-weighted across managers.
+Dashed line: leveraged loan market from the same filings, for comparison.</figcaption>
+</figure>
+
+<h2>Credit health barometer</h2>
+<p>Share of loans that no longer pay interest (non-accrual) and share of loans valued below 90, weighted by
+estimated cost. Cliffwater, the largest manager with about <span data-dl="largest">three quarters</span> of the
+market value, reports very few such loans; without Cliffwater, the levels are close to those reported for
+business development companies.</p>
+<figure>
+<img src="img/dl_barometer.svg" alt="Non-accruals and loans marked below 90" width="900" height="340">
+</figure>
+
+<h2>Quarterly returns</h2>
+<div class="table-wrap"><table id="dl-q" class="stats"><tbody><tr><td>Loading …</td></tr></tbody></table></div>
+<p class="small">Returns in % per quarter, gross of fees and unlevered. Income: coupon accrual; price: change in
+fund valuations, including realized losses. More series and the full barometer on the
+<a href="dl-analysis.html">analysis page</a>.</p>
+
+<div class="note"><p><strong>How to read the index.</strong> Returns reflect fund valuations, not transaction
+prices. They react to market moves with less than half the amplitude of traded loans (Dimson beta on the leveraged
+loan market: <span data-dl="beta">0.43</span>), so volatility and drawdowns appear lower than they would be at
+market prices. See the <a href="dl-methodology.html">methodology</a>.</p></div>
+
+</div></main>
+<footer class="site-footer"><div class="wrap">
+<span>© 2026 Thomas Mählmann. Data CC BY 4.0, code MIT.</span>
+<nav aria-label="Footer"><a href="data.html#cite">Cite</a><a href="https://github.com/thomasmaehlmann-ctrl/leveraged-loan-factors">GitHub</a><a href="impressum.html">Legal notice</a><a href="datenschutz.html">Privacy</a></nav>
+</div></footer>
+<script src="js/meta.js?v=17bfea91" defer></script>
+<script src="js/dl.js?v=afa81b6e" defer></script>
+</body>
+</html>

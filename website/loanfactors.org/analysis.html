@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="index, follow">
+<title>Analysis – Leveraged Loan Factors | loanfactors.org</title>
+<meta name="description" content="Interactive analysis of leveraged loan factor returns: cumulative performance, statistics and comparison across factors.">
+<meta property="og:title" content="Analysis – Leveraged Loan Factors | loanfactors.org">
+<meta property="og:description" content="Interactive analysis of leveraged loan factor returns: cumulative performance, statistics and comparison across factors.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://loanfactors.org/analysis.html">
+<link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="style.css?v=e8ba3965">
+</head>
+<body>
+<header class="site-header"><div class="wrap">
+<a class="brand" href="index.html">loanfactors.org</a>
+<nav class="nav" aria-label="Main"><a href="leveraged-loans.html" aria-current="page">Leveraged Loans</a><a href="direct-lending.html">Direct Lending</a><a href="about.html">About</a></nav>
+</div></header>
+<nav class="subnav" aria-label="Section"><div class="wrap"><a href="leveraged-loans.html">Overview</a><a href="factors.html">Factors</a><a href="analysis.html" aria-current="page">Analysis</a><a href="data.html">Data</a><a href="methodology.html">Methodology</a></div></nav>
+<main><div class="wrap">
+
+<h1>Analysis</h1>
+<p class="lede">Explore the factor returns interactively: choose a factor and its construction, and compare all factors
+over any period. All calculations run in your browser.</p>
+<div class="tabs" role="tablist">
+<button type="button" role="tab" id="tab-perf" aria-controls="panel-perf" aria-selected="true">Factor performance</button>
+<button type="button" role="tab" id="tab-comp" aria-controls="panel-comp" aria-selected="false">Factor comparison</button>
+</div>
+
+<section id="panel-perf" role="tabpanel" aria-labelledby="tab-perf">
+
+<div class="controls">
+<label>Factor<select id="p-factor"></select></label>
+<label>Weighting<select id="p-w"><option value="ew">Equal-weighted</option><option value="vw">Value-weighted</option><option value="vw_cap">Capped value-weighted</option></select></label>
+<label>Holding period<select id="p-h"><option value="1">1 month</option><option value="3">3 months</option><option value="6">6 months</option><option value="12">12 months</option></select></label>
+<label>Implementation lag<select id="p-l"><option value="0">None</option><option value="1">1 month</option></select></label>
+<label>Return<select id="p-rt"><option value="excess">Excess return</option><option value="total">Total return</option></select></label>
+<label>View<select id="p-view"><option value="ls">Long-short</option><option value="adjusted">Long-short, benchmark-adjusted</option><option value="longonly">Preferred quintile vs. benchmark</option></select></label>
+</div>
+<div class="period">
+<label>From<input type="month" id="p-from"></label>
+<label>To<input type="month" id="p-to"></label>
+<div class="quick" role="group" aria-label="Quick period"><button type="button" data-panel="p" data-quick="12">1Y</button><button type="button" data-panel="p" data-quick="36">3Y</button><button type="button" data-panel="p" data-quick="0">All</button></div>
+</div>
+<div class="chart-box"><div class="legend" id="p-legend"></div><div class="chart" id="p-chart">Loading data …</div></div>
+<div class="table-wrap"><table id="p-table" class="stats"></table></div>
+</section>
+
+<section id="panel-comp" role="tabpanel" aria-labelledby="tab-comp" hidden>
+
+<div class="controls">
+<label>Statistic<select id="c-metric"><option value="sharpe">Sharpe ratio</option><option value="mean">Average return (ann. %)</option><option value="alpha">Alpha vs. benchmark (ann. %)</option><option value="t">t-stat of alpha</option></select></label>
+<label>Weighting<select id="c-w"><option value="ew">Equal-weighted</option><option value="vw">Value-weighted</option><option value="vw_cap">Capped value-weighted</option></select></label>
+<label>Holding period<select id="c-h"><option value="1">1 month</option><option value="3">3 months</option><option value="6">6 months</option><option value="12">12 months</option></select></label>
+<label>Implementation lag<select id="c-l"><option value="0">None</option><option value="1">1 month</option></select></label>
+<label>Return<select id="c-rt"><option value="excess">Excess return</option><option value="total">Total return</option></select></label>
+<label>View<select id="c-view"><option value="ls">Long-short</option><option value="adjusted">Long-short, benchmark-adjusted</option><option value="longonly">Preferred quintile vs. benchmark</option></select></label>
+</div>
+<div class="period">
+<label>From<input type="month" id="c-from"></label>
+<label>To<input type="month" id="c-to"></label>
+<div class="quick" role="group" aria-label="Quick period"><button type="button" data-panel="c" data-quick="12">1Y</button><button type="button" data-panel="c" data-quick="36">3Y</button><button type="button" data-panel="c" data-quick="0">All</button></div>
+</div>
+<div class="chart-box"><div class="chart" id="c-chart"></div></div>
+</section>
+
+<div class="note">
+<p><b>How to read the statistics.</b> The benchmark is factor-specific: the average of all loans sorted for the
+selected factor, with the same weighting, holding period and lag. Alpha and beta come from a regression of the shown
+return on the benchmark return; the information ratio is alpha divided by residual volatility; t-statistics use
+ordinary least squares standard errors. The market index (grey line) contains all loans in the investable universe.
+Dimson alphas and Newey-West t-statistics are reported in <code>factor_summary.csv</code>. For the low-risk factors
+(IVOL, BAB, Quality), the view “Preferred quintile vs. benchmark” is the most informative.</p>
+<p id="a-version"></p>
+</div>
+
+</div></main>
+<footer class="site-footer"><div class="wrap">
+<span>© 2026 Thomas Mählmann. Data CC BY 4.0, code MIT.</span>
+<nav aria-label="Footer"><a href="data.html#cite">Cite</a><a href="https://github.com/thomasmaehlmann-ctrl/leveraged-loan-factors">GitHub</a><a href="impressum.html">Legal notice</a><a href="datenschutz.html">Privacy</a></nav>
+</div></footer>
+<script src="js/meta.js?v=17bfea91" defer></script>
+<script src="js/analysis.js?v=cb42ac05" defer></script>
+</body>
+</html>

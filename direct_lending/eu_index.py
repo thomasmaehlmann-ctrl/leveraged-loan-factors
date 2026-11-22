@@ -71,6 +71,10 @@ def main() -> None:
     ap.add_argument("--start", default="2023-03-31", help="first quarter-end (returns start one quarter later)")
     ap.add_argument("--min-positions", type=int, default=5, help="positions per manager for the main index")
     ap.add_argument("--distress-price", type=float, default=80.0)
+    ap.add_argument("--region", choices=["europe", "us"], default="europe",
+                    help="europe: loans in European currencies (OpenDL Europe); us: US dollar loans of BDCs")
+    ap.add_argument("--cdli", default=None, help="CSV with quarterly CDLI returns in %% (quarter, total[, income, "
+                                                 "realized, unrealized]) for the comparison of the US BDC index")
     ap.add_argument("--borrower", action="store_true", help="European borrowers in any currency instead of "
                                                              "European-currency loans")
     ap.add_argument("--recovery", type=float, default=70.8,
@@ -93,10 +97,18 @@ def main() -> None:
 
     p = pd.read_parquet(Path(args.dir) / "bdc_positions.parquet")
     p["month_end"] = pd.to_datetime(p["month_end"])
-    sel = p["eu_borrower"] if args.borrower else p["eu_ccy"]
+    if args.region == "us":
+        sel = p["ccy"].eq("USD")
+    else:
+        sel = p["eu_borrower"] if args.borrower else p["eu_ccy"]
     p = p[p["dl_bdc"] & sel & p["month_end"].dt.month.isin([3, 6, 9, 12])
           & (p["month_end"] >= pd.Timestamp(args.start) - pd.offsets.QuarterEnd(1))]
     p = p[p["price"].between(1, 150) & ~p["instrument"].isin(["bond", "equipment", "revolver", "delayed_draw"])].copy()
+    n_q = p.groupby("month_end").size()
+    thin = [q for i, q in enumerate(n_q.index) if i > 0 and n_q[q] < 0.5 * n_q.iloc[:i].tail(4).median()]
+    if thin:
+        print(f"Quarter-ends with incomplete reporting dropped: {[str(pd.Timestamp(q).date()) for q in thin]}")
+        p = p[~p["month_end"].isin(thin)]
     if args.ccy:
         p = p[p["ccy"].isin([c.upper() for c in args.ccy])]
     if args.first_lien_only:
@@ -150,15 +162,21 @@ def main() -> None:
     ok = p["coupon"].notna() & p["base"].notna()
     if ok.any():
         sp = (p.loc[ok, "coupon"] - p.loc[ok, "base"]).groupby([p.loc[ok, "ccy"], p.loc[ok, "month_end"].dt.year]).median()
-        tab = sp.unstack(0)[[c for c in ["EUR", "GBP"] if c in sp.index.get_level_values(0)]]
+        tab = sp.unstack(0)[[c for c in ["EUR", "GBP", "USD"] if c in sp.index.get_level_values(0)]]
         print("Median coupon minus 3-month base rate (implied spread, % p.a.):")
         print(tab.round(2).to_string())
 
     # ---- non-accrual: stated in the identifier, or valued below --nonaccrual-price
     na = p["nonaccrual"] | (p["price"] < args.nonaccrual_price)
+    # weights in US dollars: principal converted at the exchange rate of the first quarter-end of each position
+    # (fixed, so that exchange rate moves do not appear as draws or repayments); prices stay in loan currency
+    p = p.sort_values("month_end")
+    p["usd_per_ccy_t"] = (p["fv_usd"] / p["fv_local"]).where(p["fv_local"] > 0)
+    p["fx0"] = p.groupby(["cik", "key", "ccy"])["usd_per_ccy_t"].transform("first").fillna(p["usd_per_ccy_t"]).fillna(1.0)
+    p["par_usd"] = p["par"] * p["fx0"]
     pos = pd.DataFrame({
         "FUND_KEY": p["cik"].astype(str), "borrower": p["key"] + "|" + p["ccy"], "month_end": p["month_end"],
-        "manager": p["manager"], "par": p["par"], "value": p["fv_local"], "price": p["price"],
+        "manager": p["manager"], "par": p["par_usd"], "value": p["par_usd"] * p["price"] / 100, "price": p["price"],
         "coupon": np.where(na, 0.0, p["coupon"]), "default": na, "pik": p["pik"], "ccy": p["ccy"]})
     print(f"Positions: {len(pos):,}; BDCs {pos['FUND_KEY'].nunique()}; managers {pos['manager'].nunique()}; "
           f"quarter-ends {pos['month_end'].nunique()}; treated as non-accrual {pos['default'].mean():.1%} "
@@ -229,7 +247,7 @@ def main() -> None:
     ret.to_parquet(out / "eu_position_returns.parquet", index=False)
 
     summ = di.summary(ix)
-    print("\n=== European direct lending index (returns in loan currency) ===")
+    print(f"\n=== {'European' if args.region == 'europe' else 'US BDC'} direct lending index (returns in loan currency) ===")
     print(summ.round(2).to_string())
     tab = pd.DataFrame({k: v["total"] * 100 for k, v in ix.items()})
     n = ix["EW managers"]
@@ -262,6 +280,37 @@ def main() -> None:
         cmp_.columns = ["EW managers", "VW all", "ESDI"]
         print(cmp_.loc[cmp_.index >= ix["VW all"].index.min()].round(2).to_string())
 
+    if args.cdli:
+        c = pd.read_csv(args.cdli)
+        qc = c.columns[0]
+        c[qc] = pd.PeriodIndex(c[qc].astype(str).str.replace(" ", ""), freq="Q").to_timestamp(how="end").normalize() \
+            if not str(c[qc].iloc[0])[:4].isdigit() or "Q" in str(c[qc].iloc[0]) else pd.to_datetime(c[qc])
+        c[qc] = c[qc] + pd.offsets.QuarterEnd(0)
+        c = c.set_index(qc)
+        tcol = [x for x in c.columns if x.lower().startswith("total")][0]
+        rows = []
+        for k, v in ix.items():
+            j = pd.concat([v["total"] * 100, c[tcol]], axis=1, sort=True).dropna()
+            if len(j) < 3:
+                continue
+            row = {"index": k, "quarters": len(j), "corr total": j.iloc[:, 0].corr(j.iloc[:, 1]),
+                   "index p.a.": ((1 + j.iloc[:, 0] / 100).prod() ** (4 / len(j)) - 1) * 100,
+                   "CDLI p.a.": ((1 + j.iloc[:, 1] / 100).prod() ** (4 / len(j)) - 1) * 100}
+            for comp, mine in [("income", "income"), ("price", "price_ret"), ("realized", "realized_cost"),
+                               ("unrealized", "unrealized_cost")]:
+                cc = [x for x in c.columns if x.lower().startswith(comp)]
+                if cc and mine in v:
+                    jj = pd.concat([v[mine] * 100, c[cc[0]]], axis=1, sort=True).dropna()
+                    if len(jj) >= 3:
+                        row[f"corr {comp}"] = jj.iloc[:, 0].corr(jj.iloc[:, 1])
+                        row[f"{comp} p.a. index / CDLI"] = f"{jj.iloc[:, 0].mean() * 4:.2f} / {jj.iloc[:, 1].mean() * 4:.2f}"
+            rows.append(row)
+        print("\n=== Comparison with the Cliffwater Direct Lending Index (CDLI), common quarters ===")
+        print(pd.DataFrame(rows).set_index("index").round(2).to_string())
+        cmp_ = pd.concat([ix["EW managers"]["total"] * 100, ix["VW all"]["total"] * 100, c[tcol]], axis=1, sort=True)
+        cmp_.columns = ["EW managers", "VW all", "CDLI"]
+        print(cmp_.loc[cmp_.index >= ix["VW all"].index.min()].round(2).to_string())
+
     bar = di.credit_barometer(pos, ix, largest, args.start)
     pc = pos[pos["month_end"] > pd.Timestamp(args.start) - pd.offsets.QuarterEnd(1)]
     tot = pc.groupby("month_end")["cost"].sum()
@@ -269,7 +318,7 @@ def main() -> None:
     bar.to_csv(out / "credit_health_barometer.csv")
     cols = [c for c in ["marked < 80 % cost", "marked < 90 % cost", "PIK % par", "T4Q realized (cost) % (VW)",
                         "T4Q unrealized % (VW)"] if c in bar]
-    print("\n=== Credit health barometer (European direct lending in BDCs) ===")
+    print(f"\n=== Credit health barometer ({'European' if args.region == 'europe' else 'US'} direct lending in BDCs) ===")
     print(bar[cols].round(2).to_string())
     print(f"\nSaved in {out}")
 

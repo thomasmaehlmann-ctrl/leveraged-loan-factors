@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="index, follow">
+<title>Factors – Leveraged Loan Factors | loanfactors.org</title>
+<meta name="description" content="Definitions of the nine leveraged loan factors: value, momentum, illiquidity, quality, low risk, carry, IVOL, BAB and combi.">
+<meta property="og:title" content="Factors – Leveraged Loan Factors | loanfactors.org">
+<meta property="og:description" content="Definitions of the nine leveraged loan factors: value, momentum, illiquidity, quality, low risk, carry, IVOL, BAB and combi.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://loanfactors.org/factors.html">
+<link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="style.css?v=e8ba3965">
+</head>
+<body>
+<header class="site-header"><div class="wrap">
+<a class="brand" href="index.html">loanfactors.org</a>
+<nav class="nav" aria-label="Main"><a href="leveraged-loans.html" aria-current="page">Leveraged Loans</a><a href="direct-lending.html">Direct Lending</a><a href="about.html">About</a></nav>
+</div></header>
+<nav class="subnav" aria-label="Section"><div class="wrap"><a href="leveraged-loans.html">Overview</a><a href="factors.html" aria-current="page">Factors</a><a href="analysis.html">Analysis</a><a href="data.html">Data</a><a href="methodology.html">Methodology</a></div></nav>
+<main><div class="wrap">
+
+<h1>Factors</h1>
+<p class="lede">Nine factors that follow the factor definitions in <a href="https://doi.org/10.1080/0015198X.2022.2085017">Mählmann
+and Sukonnik (2022)</a> and <a href="https://doi.org/10.3905/jpm.2024.1.609">Mählmann and Reck (2024)</a>, adapted to the
+information available in public fund filings.</p>
+
+<div class="table-wrap"><table>
+<thead><tr><th>Code</th><th>Factor</th><th>Signal</th><th>Preferred side</th></tr></thead>
+<tbody>
+<tr><td><code>value</code></td><td>Value (PD)</td><td>Spread-to-maturity divided by a model-implied 12-month default probability</td><td>High</td></tr>
+<tr><td><code>momentum</code></td><td>Momentum</td><td>Cumulative excess return over months t−3 to t−1</td><td>High</td></tr>
+<tr><td><code>illiquidity</code></td><td>Illiquidity</td><td>Number of funds holding the loan (fewer = less liquid)</td><td>Less liquid</td></tr>
+<tr><td><code>quality</code></td><td>Quality (PD)</td><td>Model-implied 12-month default probability</td><td>Low</td></tr>
+<tr><td><code>low_risk</code></td><td>Low Risk</td><td>Spread duration</td><td>Low</td></tr>
+<tr><td><code>carry</code></td><td>Carry</td><td>Spread-to-maturity</td><td>High</td></tr>
+<tr><td><code>ivol</code></td><td>IVOL</td><td>Idiosyncratic volatility from a 12-month market model</td><td>Low</td></tr>
+<tr><td><code>bab</code></td><td>BAB</td><td>Market beta from a 12-month market model (Dimson beta)</td><td>Low</td></tr>
+<tr><td><code>combi</code></td><td>Combi</td><td>Average of the standardized signals of the eight factors above</td><td>High</td></tr>
+<tr><td><code>market</code></td><td>Market</td><td>All loans in the investable universe</td><td>–</td></tr>
+</tbody></table></div>
+
+<div class="note">
+<p><b>Reading the low-risk factors.</b> For IVOL, BAB and Quality the preferred quintile holds the safest loans.
+Their raw long-short returns are often negative, because riskier loans earn higher raw returns. The anomaly shows up
+in risk-adjusted terms: the safest loans earn more than their low market exposure implies. Judge these factors by
+their alpha in <code>factor_summary.csv</code>, not by the raw long-short spread.</p>
+</div>
+
+<h2>How the premia unfold over time</h2>
+<p>Factors differ in how long their premia last after portfolio formation. Momentum peaks two to four months after
+formation and fades after about six months. Low volatility (IVOL) and illiquidity earn their premia persistently.
+This is why the database offers several holding periods.</p>
+<figure>
+<img src="img/alpha_by_horizon.svg" width="1000" height="480"
+alt="Dimson alpha of selected factor portfolios by month after portfolio formation, months 1 to 12.">
+<figcaption><b>Figure 2.</b> Dimson alpha (annualized, basis points) of the preferred quintile against the benchmark,
+by month after portfolio formation. Equal-weighted portfolios.</figcaption>
+</figure>
+
+<h2>Portfolio construction</h2>
+<ul>
+<li>Each month, loans in the investable universe with an available signal are sorted into quintiles.</li>
+<li>The long-short return is the preferred quintile minus the opposite quintile. The benchmark is the average of all
+sorted loans.</li>
+<li>Longer holding periods use overlapping cohorts with weights fixed at formation.</li>
+<li>The implementation lag delays the first holding month by one month. N-PORT data are published with about
+60 days delay, so the lagged series approximate an implementable strategy.</li>
+</ul>
+<p>Details are in the <a href="methodology.html">methodology</a>.</p>
+
+</div></main>
+<footer class="site-footer"><div class="wrap">
+<span>© 2026 Thomas Mählmann. Data CC BY 4.0, code MIT.</span>
+<nav aria-label="Footer"><a href="data.html#cite">Cite</a><a href="https://github.com/thomasmaehlmann-ctrl/leveraged-loan-factors">GitHub</a><a href="impressum.html">Legal notice</a><a href="datenschutz.html">Privacy</a></nav>
+</div></footer>
+<script src="js/meta.js?v=17bfea91" defer></script>
+</body>
+</html>

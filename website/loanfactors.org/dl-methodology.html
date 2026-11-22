@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="index, follow">
+<title>Methodology – Open Direct Lending Indices | loanfactors.org</title>
+<meta name="description" content="Methodology of the Registered Fund Direct Lending Index: data, loan selection, returns, weighting and validation.">
+<meta property="og:title" content="Methodology – Open Direct Lending Indices | loanfactors.org">
+<meta property="og:description" content="Methodology of the Registered Fund Direct Lending Index: data, loan selection, returns, weighting and validation.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://loanfactors.org/dl-methodology.html">
+<link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="style.css?v=e8ba3965">
+</head>
+<body>
+<header class="site-header"><div class="wrap">
+<a class="brand" href="index.html">loanfactors.org</a>
+<nav class="nav" aria-label="Main"><a href="leveraged-loans.html">Leveraged Loans</a><a href="direct-lending.html" aria-current="page">Direct Lending</a><a href="about.html">About</a></nav>
+</div></header>
+<nav class="subnav" aria-label="Section"><div class="wrap"><a href="direct-lending.html">Overview</a><a href="dl-europe.html">Europe</a><a href="dl-us.html">US</a><a href="dl-analysis.html">Analysis</a><a href="dl-data.html">Data</a><a href="dl-methodology.html" aria-current="page">Methodology</a></div></nav>
+<main><div class="wrap">
+
+<h1>Methodology</h1>
+<p class="lede">How public fund filings become direct lending indices. Both indices follow one method for returns,
+exits, recoveries and weighting; they differ in their data sources. The full documentation and code are on
+<a href="https://github.com/thomasmaehlmann-ctrl/leveraged-loan-factors">GitHub</a>.</p>
+
+<h2 id="europe">OpenDL Europe</h2>
+<h3>Data</h3>
+<p>Business development companies (BDCs) file their schedules of investments with the SEC in machine-readable form
+(XBRL), with the fair value, cost, principal and interest rate of every position. The SEC publishes these facts in
+its Financial Statement and Notes data sets; holding-level data are available from the third quarter of 2022 and
+cover all BDCs from 2023. The unit of the principal gives the loan currency.</p>
+<h3>Which loans are included</h3>
+<ul>
+<li><strong>Loans in European currencies</strong> (EUR, GBP, CHF, SEK, NOK, DKK, PLN) held by BDCs whose business is
+direct lending; BDCs focused on real estate, infrastructure, asset-based or venture lending are excluded.</li>
+<li><strong>Cleaning:</strong> subtotals (by industry, country or asset class), cash, equity, revolvers, delayed-draw
+tranches, bonds, equipment finance and structured finance are removed. Mislabeled currencies are corrected: cost is
+reported in US dollars at historical rates and principal in the loan currency, so their ratio reveals the true
+currency.</li>
+<li><strong>Positions:</strong> identifiers are normalized (rates, spreads, dates, headings and affiliation notes
+removed), and positions renamed from one quarter to the next are linked by the distinctive words of the borrower
+name. About 85% of positions are found again in the following quarter.</li>
+</ul>
+<h3>Returns</h3>
+<ul>
+<li><strong>Prices</strong> in loan currency: fair value converted with quarter-end Federal Reserve H.10 exchange
+rates, divided by principal.</li>
+<li><strong>Coupon:</strong> the tagged interest rate; else the rate stated in the identifier; else the 3-month base
+rate of the currency plus the stated spread; else the median of the BDC, currency and quarter.</li>
+<li><strong>Distress:</strong> BDCs do not tag non-accrual status. Loans described as non-accrual or valued below 70
+earn no income; distressed exits are realized at a recovery of <span data-dl="recovery">70.8</span>% of par, the
+estimate from OpenDL US.</li>
+<li><strong>Exits, cost basis and weighting</strong> as for OpenDL US below. Borrowers that the same BDC still holds
+in the next quarter under another identifier, tranche or currency are not counted as exits. The main index weights
+managers equally (at least ten loans per quarter).</li>
+</ul>
+<h3>Validation</h3>
+<ul>
+<li><strong>Same loans in two sources:</strong> loans held by the same manager in a registered fund (Form N-PORT) and
+in a BDC are valued alike: median difference <span data-eu="nb_med">0.18</span> points, <span data-eu="nb_w1">88%</span>
+within one point. This confirms the processing of currencies, exchange rates and identifiers.</li>
+<li><strong>Index level:</strong> compared with the S&P Lincoln European Senior Debt Index, the first-lien sub-index
+has a correlation of <span data-eu="corr_fl">0.67</span> and differs by <span data-eu="diff_fl">–0.80</span>
+percentage points per year; the value-weighted index of all loans differs by <span data-eu="diff_vw">–1.7</span>
+points per year. Part of these differences reflects the measurement of income: the index uses contractual coupons,
+without fees and the accretion of discounts, which benchmarks built from income statements include. The rest
+reflects junior and unspecified loans and differences between the portfolios.</li>
+<li><strong>Sensitivity:</strong> the assumption that matters most is the treatment of exits valued between 80 and 95;
+treating them as repayments raises the index by up to 1.4 percentage points per year. This variant is published as
+an upper bound.</li>
+</ul>
+<h3>Limitations</h3>
+<ul>
+<li>The index covers European direct lending held by BDCs of US and global managers, not the whole European market.</li>
+<li>Identifiers are free text; their normalization and linking are imperfect. Non-accrual status and payment-in-kind
+interest are not yet captured directly (payment-in-kind interest will be included from the next update).</li>
+<li>Valuations, not transaction prices; gross of fees, unlevered.</li>
+</ul>
+
+<h2 id="us">OpenDL US</h2>
+<p>The construction, validation and properties of OpenDL US are documented in a
+<a href="https://papers.ssrn.com/sol3/papers.cfm?abstract_id=7733980">working paper on SSRN</a>.</p>
+
+<h3>Data</h3>
+<p>US registered investment funds report their complete holdings to the SEC in Form N-PORT, including the principal
+amount and fair value of every loan. Funds disclose these reports publicly for the last month of each fiscal
+quarter; most direct lending funds report at calendar quarter-ends. The index uses the quarterly data sets of the
+SEC from 2019 and identifies each fund's investment adviser and fund type from Form N-CEN.</p>
+
+<h3>Which loans are included</h3>
+<ul>
+<li><strong>Funds:</strong> closed-end funds registered on Form N-2 (interval, tender offer and listed credit funds).
+Open-end mutual funds, whose private loans are mostly bespoke financings, are excluded.</li>
+<li><strong>Loans:</strong> corporate loans reported without a LoanX ID, CUSIP, ISIN or FIGI (placeholder identifiers
+count as none) and valued at fair value level 3, with at least USD 250,000 of principal.</li>
+<li><strong>Exclusions:</strong> unfunded or partially funded tranches that only pay a commitment fee, revolvers,
+delayed-draw tranches, broadly syndicated term loans B, real estate, asset-based, consumer and fund finance loans.
+Loans that stop paying interest (non-accrual) remain in the index.</li>
+</ul>
+
+<h3>Positions and returns</h3>
+<ul>
+<li><strong>Positions:</strong> all tranches of a borrower in a fund are combined. Borrower names are normalized
+(legal forms, facility descriptions and dates removed) to follow loans from quarter to quarter.</li>
+<li><strong>Income:</strong> average coupon of the two quarter-ends divided by four and by the price at the start of the
+quarter; zero when the loan is in default or non-accrual. Payment-in-kind interest is included, because it increases
+the principal but not the price.</li>
+<li><strong>Price return:</strong> change in the fund's valuation per 100 of principal.</li>
+<li><strong>Exits:</strong> a loan that leaves a portfolio while the fund continues to report is treated as repaid at
+par if its last valuation was at least 95 and it was not in default. Loans that leave in default, in non-accrual or
+valued below 80 are realized at a recovery rate estimated from the data: the median valuation in the first quarter of
+non-accrual, <span data-dl="recovery">71</span>% of par. Other exits are realized at the last valuation.</li>
+<li><strong>Components:</strong> for the value-weighted indices, the price return is split into realized losses
+(relative to an estimated cost basis), accretion of purchase discounts at repayment, and unrealized changes, as in
+the financial statements of business development companies.</li>
+</ul>
+
+<h3>Weighting</h3>
+<p>About <span data-dl="largest">three quarters</span> of the market value is held by funds advised by Cliffwater.
+The main index therefore weights managers equally: within each manager, loans are weighted by market value; across
+managers with at least ten loans in the quarter, returns are averaged. A value-weighted index over all loans and a
+value-weighted index without Cliffwater are published alongside.</p>
+
+<h3>Validation</h3>
+<ul>
+<li><strong>Index level:</strong> quarterly returns of the value-weighted index have a correlation of
+<span data-dl="corr_vw">0.93</span> with the Cliffwater Direct Lending Index (CDLI), interest income of
+<span data-dl="corr_inc">0.97</span>. Calendar-year returns of the main index differ from the CDLI by
+<span data-dl="diff_ew">0.4</span> percentage points on average.</li>
+<li><strong>Credit indicators:</strong> without Cliffwater, the share of non-accrual loans and of loans valued below 90
+are close to the levels reported for the CDLI.</li>
+<li><strong>Loan level:</strong> where several managers hold the same loan, their valuations of performing loans differ
+by about 0.7 points on average; valuations of stressed loans differ considerably more. Cliffwater does not value
+jointly held loans systematically higher than other managers.</li>
+</ul>
+
+<h3>Limitations</h3>
+<ul>
+<li>Returns are based on fund valuations, not transaction prices; they are smoothed and dampened relative to traded
+credit (Dimson beta on the leveraged loan market: <span data-dl="beta">0.43</span>).</li>
+<li>Income excludes fees not reported in N-PORT, such as prepayment fees.</li>
+<li>Business development companies, which hold most US direct loans, do not file Form N-PORT; the index covers
+registered funds only.</li>
+<li>Returns are gross of fees and unlevered.</li>
+</ul>
+<p class="small">"Cliffwater Direct Lending Index" and "CDLI" are trademarks of Cliffwater LLC. This index is
+independent of and not endorsed by Cliffwater LLC.</p>
+
+</div></main>
+<footer class="site-footer"><div class="wrap">
+<span>© 2026 Thomas Mählmann. Data CC BY 4.0, code MIT.</span>
+<nav aria-label="Footer"><a href="data.html#cite">Cite</a><a href="https://github.com/thomasmaehlmann-ctrl/leveraged-loan-factors">GitHub</a><a href="impressum.html">Legal notice</a><a href="datenschutz.html">Privacy</a></nav>
+</div></footer>
+<script src="js/meta.js?v=17bfea91" defer></script>
+<script src="js/dl.js?v=afa81b6e" defer></script>
+</body>
+</html>

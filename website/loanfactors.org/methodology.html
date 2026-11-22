@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="index, follow">
+<title>Methodology – Leveraged Loan Factors | loanfactors.org</title>
+<meta name="description" content="How the leveraged loan factor database is built from SEC Form N-PORT filings: prices, returns, universe, signals and validation.">
+<meta property="og:title" content="Methodology – Leveraged Loan Factors | loanfactors.org">
+<meta property="og:description" content="How the leveraged loan factor database is built from SEC Form N-PORT filings: prices, returns, universe, signals and validation.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://loanfactors.org/methodology.html">
+<link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="style.css?v=e8ba3965">
+</head>
+<body>
+<header class="site-header"><div class="wrap">
+<a class="brand" href="index.html">loanfactors.org</a>
+<nav class="nav" aria-label="Main"><a href="leveraged-loans.html" aria-current="page">Leveraged Loans</a><a href="direct-lending.html">Direct Lending</a><a href="about.html">About</a></nav>
+</div></header>
+<nav class="subnav" aria-label="Section"><div class="wrap"><a href="leveraged-loans.html">Overview</a><a href="factors.html">Factors</a><a href="analysis.html">Analysis</a><a href="data.html">Data</a><a href="methodology.html" aria-current="page">Methodology</a></div></nav>
+<main><div class="wrap">
+
+<h1>Methodology</h1>
+<p class="lede">How fund filings become loan prices, returns and factor portfolios. The methods paper
+<a href="https://papers.ssrn.com/sol3/papers.cfm?abstract_id=7704758"><i>Leveraged Loan Factors from Public Data</i></a> describes the construction and validation in
+detail; the technical documentation is in <a href="https://github.com/thomasmaehlmann-ctrl/leveraged-loan-factors/blob/main/docs/METHODOLOGY.md">docs/METHODOLOGY.md</a> on GitHub.</p>
+
+<h2>From filings to loan prices</h2>
+<p>US registered funds report all holdings in Form N-PORT. The SEC publishes these filings as quarterly data sets,
+available from October 2019. The pipeline keeps USD loans held long, computes a price as fair value divided by
+notional, and takes the median across all funds that report the same loan in a month.</p>
+<p>Funds identify the same loan in different ways. LoanX IDs, CUSIPs, ISINs and FIGIs are therefore linked to each
+other, also using identifiers that funds include in loan names. Consumer and platform loans without identifiers are
+excluded.</p>
+
+<h2>Returns</h2>
+<p>The total return combines the price change and one month of coupon. Excess returns subtract the 90-day average
+SOFR, plus the ISDA spread adjustment of 26.161 bp until June 2023 as a proxy for 3-month LIBOR. When a loan leaves
+the sample near par and was held by at least two funds, it is assumed to be repaid at par.</p>
+
+<h2>Investable universe</h2>
+<p>A loan is investable at month t if it is identified, has been held by at least two funds, trades between
+min(20th percentile, 80) and 105, and has more than 120 days to maturity. The lower price bound falls below 80 only
+in stress periods.</p>
+
+<h2>Signals</h2>
+<p>Spread-to-maturity, spread duration and the margin over the base rate are computed from price, coupon and
+maturity. Idiosyncratic volatility and beta come from a rolling 12-month market model with one lag. Default
+probabilities come from a logit model estimated only on information available at each point in time.</p>
+
+<h2>Validation</h2>
+<p>The equal-weighted market index has a monthly return correlation of 0.995 with the Morningstar LSTA US Leveraged
+Loan Index and a tracking error of 0.6% p.a. Its beta on the lagged index return is close to zero, so the fund
+valuations do not lag the market.</p>
+
+<h2>Known limitations</h2>
+<ul>
+<li>Prices are fair values reported by funds, not transaction prices.</li>
+<li>Funds publish their holdings only at fiscal quarter-ends, so the set of reporting funds varies from month to
+month.</li>
+<li>The sample starts in late 2019. Signals that need estimation windows start later.</li>
+<li>Loan-level data are not published because some identifiers are proprietary. They can be rebuilt from the SEC
+data with the pipeline.</li>
+</ul>
+
+</div></main>
+<footer class="site-footer"><div class="wrap">
+<span>© 2026 Thomas Mählmann. Data CC BY 4.0, code MIT.</span>
+<nav aria-label="Footer"><a href="data.html#cite">Cite</a><a href="https://github.com/thomasmaehlmann-ctrl/leveraged-loan-factors">GitHub</a><a href="impressum.html">Legal notice</a><a href="datenschutz.html">Privacy</a></nav>
+</div></footer>
+<script src="js/meta.js?v=17bfea91" defer></script>
+</body>
+</html>

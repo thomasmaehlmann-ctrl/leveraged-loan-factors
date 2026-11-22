@@ -1,5 +1,14 @@
 # Changelog
 
+## v2026.12.3
+- OpenDL Europe v2026.12.1 (data release): corrections of version 2026.12
+  - `bdc_link.py`: a USD tag is replaced only if cost exceeds principal by more than 15% (version 2026.12 moved USD loans with low cost-to-principal ratios to other currencies)
+  - `eu_index.py`: weights in US dollars (principal at the exchange rate of the first quarter-end of each position)
+  - `bdc_link.py`: linking compares each BDC with its own previous filing; distinctive words per currency group; inverted index for candidate pairs (all currencies feasible)
+- `eu_index.py --region us`: index of USD loans of BDCs, comparison with the CDLI (`--cdli`); incomplete last quarter-ends dropped
+- `eu_export.py`: validation text from the metadata, release notes per version
+- `website/loanfactors.org/`: static pages of the website
+
 ## v2026.12.2
 - OpenDL Europe (BDC European Direct Lending Index): BDC holdings from the SEC Financial Statement and Notes data sets (`bdc_panel.py`, `bdc_link.py`), index, diagnostics, robustness, loan-level validation and release export (`eu_*.py`)
 - `pipeline/nport_loans.py`: option `--europe` (non-USD loans and USD loans of European borrowers, with country and exchange rate)

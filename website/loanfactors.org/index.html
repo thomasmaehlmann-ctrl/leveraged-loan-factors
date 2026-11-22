@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="index, follow">
+<title>loanfactors.org – open data for leveraged loans and direct lending</title>
+<meta name="description" content="Open return series for US leveraged loans and for European and US direct lending, built from public SEC filings: Form N-PORT holdings of registered funds and schedules of investments of business development companies.">
+<meta property="og:title" content="loanfactors.org – open data for leveraged loans and direct lending">
+<meta property="og:description" content="Open return series for US leveraged loans and for European and US direct lending, built from public SEC filings: Form N-PORT holdings of registered funds and schedules of investments of business development companies.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://loanfactors.org/">
+<link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="style.css?v=e8ba3965">
+</head>
+<body>
+<header class="site-header"><div class="wrap">
+<a class="brand" href="index.html">loanfactors.org</a>
+<nav class="nav" aria-label="Main"><a href="leveraged-loans.html">Leveraged Loans</a><a href="direct-lending.html">Direct Lending</a><a href="about.html">About</a></nav>
+</div></header>
+
+<main><div class="wrap">
+
+<h1>Open data for corporate loans</h1>
+<p class="lede">Return series for US leveraged loans and for direct lending in Europe and the US, built entirely from
+two public SEC sources: the holdings of US registered funds (Form N-PORT) and the schedules of investments of
+business development companies (BDCs). Every number can be reproduced from public filings with open code.</p>
+
+<div class="cards">
+<a class="card" href="leveraged-loans.html">
+<h2>Open US Leveraged Loan Factors</h2>
+<p>Monthly returns of nine factors for US syndicated leveraged loans in 48 specifications, and a market index that
+tracks the Morningstar LSTA US Leveraged Loan Index with a correlation of <span data-meta="index_corr">0.995</span>.</p>
+<span class="more">Factors, analysis and data →</span>
+</a>
+<a class="card" href="direct-lending.html">
+<h2>Open Direct Lending Indices</h2>
+<p><strong>OpenDL Europe</strong> and <strong>OpenDL US</strong>: quarterly returns of European and US direct lending
+from public SEC filings, with credit health barometers. Europe, last quarter (<span data-eu="last_quarter">–</span>):
+<span data-eu="last_q">–</span>; US: <span data-dl="last_q">–</span>.</p>
+<span class="more">Indices, analysis and data →</span>
+</a>
+</div>
+
+<h2>Why public data</h2>
+<p>Prices of leveraged loans and private loans come from commercial vendors whose licenses prohibit sharing them,
+and the valuations behind established private credit benchmarks cannot be fully inspected. Research and benchmarks
+in these markets are therefore hard to replicate. Two kinds of SEC filings are public and report loan holdings at
+fair value; aggregated across funds, they cover a large part of both markets.</p>
+
+<div class="table-wrap"><table>
+<thead><tr><th>Source</th><th>Who reports</th><th>Used for</th></tr></thead>
+<tbody>
+<tr><td><strong>Form N-PORT</strong><br><span class="small">monthly holdings reports, published by the SEC
+quarterly</span></td><td>US registered investment funds: mutual funds and ETFs, interval funds and other
+closed-end funds</td><td><a href="leveraged-loans.html">Leveraged Loan Factors</a> (mutual funds, ETFs and
+closed-end funds holding syndicated loans); <a href="dl-us.html">OpenDL US</a> (interval and other closed-end funds
+holding direct loans)</td></tr>
+<tr><td><strong>Schedules of investments in XBRL</strong><br><span class="small">from quarterly and annual
+reports, published in the SEC Financial Statement and Notes data sets</span></td><td>Business development companies
+(BDCs), the main US vehicles for direct lending; they do not file Form N-PORT</td><td><a href="dl-europe.html">OpenDL
+Europe</a> (loans in European currencies)</td></tr>
+</tbody></table></div>
+
+<p>The leveraged loan methods are documented in a
+<a href="https://papers.ssrn.com/sol3/papers.cfm?abstract_id=7704758">working paper on SSRN</a>, the direct lending
+indices in their <a href="dl-methodology.html">methodology</a> and, for OpenDL US, in a
+<a href="https://papers.ssrn.com/sol3/papers.cfm?abstract_id=7733980">second working paper</a>. All data are on Zenodo, all code on
+<a href="https://github.com/thomasmaehlmann-ctrl/leveraged-loan-factors">GitHub</a>.</p>
+<p class="small">Created by <a href="about.html">Thomas Mählmann</a>, Catholic University of Eichstätt-Ingolstadt.</p>
+
+</div></main>
+<footer class="site-footer"><div class="wrap">
+<span>© 2026 Thomas Mählmann. Data CC BY 4.0, code MIT.</span>
+<nav aria-label="Footer"><a href="data.html#cite">Cite</a><a href="https://github.com/thomasmaehlmann-ctrl/leveraged-loan-factors">GitHub</a><a href="impressum.html">Legal notice</a><a href="datenschutz.html">Privacy</a></nav>
+</div></footer>
+<script src="js/meta.js?v=17bfea91" defer></script>
+<script src="js/dl.js?v=afa81b6e" defer></script>
+</body>
+</html>

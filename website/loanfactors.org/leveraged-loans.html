@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="index, follow">
+<title>Leveraged Loan Factors: open factor returns for US leveraged loans – loanfactors.org</title>
+<meta name="description" content="Open database of monthly factor returns for US leveraged loans, built from public SEC Form N-PORT filings. Free to use and cite.">
+<meta property="og:title" content="Leveraged Loan Factors: open factor returns for US leveraged loans – loanfactors.org">
+<meta property="og:description" content="Open database of monthly factor returns for US leveraged loans, built from public SEC Form N-PORT filings. Free to use and cite.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://loanfactors.org/leveraged-loans.html">
+<link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="style.css?v=e8ba3965">
+</head>
+<body>
+<header class="site-header"><div class="wrap">
+<a class="brand" href="index.html">loanfactors.org</a>
+<nav class="nav" aria-label="Main"><a href="leveraged-loans.html" aria-current="page">Leveraged Loans</a><a href="direct-lending.html">Direct Lending</a><a href="about.html">About</a></nav>
+</div></header>
+<nav class="subnav" aria-label="Section"><div class="wrap"><a href="leveraged-loans.html" aria-current="page">Overview</a><a href="factors.html">Factors</a><a href="analysis.html">Analysis</a><a href="data.html">Data</a><a href="methodology.html">Methodology</a></div></nav>
+<main><div class="wrap">
+
+<h1>Factor returns for US leveraged loans, built from public SEC data</h1>
+<p class="lede">An open database of monthly factor returns for the US leveraged loan market. Every number is
+derived from fund holdings reported to the SEC in Form N-PORT, so anyone can reproduce it.</p>
+<div class="actions">
+<a class="btn btn-primary" href="https://doi.org/10.5281/zenodo.24113424">Download the data</a>
+<a class="btn btn-secondary" href="https://github.com/thomasmaehlmann-ctrl/leveraged-loan-factors">View the code on GitHub</a>
+<a class="btn btn-secondary" href="https://papers.ssrn.com/sol3/papers.cfm?abstract_id=7704758">Read the paper</a>
+</div>
+
+<h2 class="takeaway">Public data, market-grade prices</h2>
+<p>The benchmark built solely from fund filings to the SEC moves almost one-for-one with the industry-standard
+Morningstar LSTA US Leveraged Loan Index. The factor returns on this site are therefore measured on prices that
+reflect the actual loan market, not on a niche sample.</p>
+<figure style="margin-top:20px">
+<img src="img/benchmark_vs_index.svg" width="1000" height="480"
+alt="Cumulative total return of the equal-weighted N-PORT loan benchmark and the Morningstar LSTA US Leveraged Loan Index, October 2019 to April 2026. The two lines are almost identical.">
+<figcaption><b>Figure 1.</b> Cumulative total return of the equal-weighted N-PORT benchmark and the Morningstar
+LSTA US Leveraged Loan Index. Monthly return correlation <span data-meta="index_corr">0.995</span> (<span data-meta="index_period">2019-10 to 2026-04</span>).</figcaption>
+</figure>
+
+<dl class="facts">
+<div><dt>Factors</dt><dd>9 plus market</dd></div>
+<div><dt>Sample</dt><dd><span data-meta="start">Oct 2019</span> – <span data-meta="end">Apr 2026</span></dd></div>
+<div><dt>Loans in the universe</dt><dd>about 1,500 per month</dd></div>
+<div><dt>Updates</dt><dd>quarterly</dd></div>
+</dl>
+
+<h2>Factors to watch</h2>
+<p>All factors ranked by their alpha over the last 12 months (<span id="ftw-period">latest year</span>): the return of
+the preferred quintile in excess of the factor-specific benchmark, adjusted for its beta. Equal-weighted portfolios,
+holding period of one month.</p>
+<div class="table-wrap"><table id="ftw-table" class="stats ftw"><tbody><tr><td>Loading …</td></tr></tbody></table></div>
+<p class="small">Twelve monthly returns are a short window; treat the ranking as an indication of recent
+performance, not as evidence. <a href="analysis.html">Explore all factors and periods</a>.</p>
+
+<h2>Why this database</h2>
+<p>Leveraged loans are private, over-the-counter instruments. Loan-level prices are normally available only from
+commercial vendors whose licenses do not allow public redistribution. Research on factor investing in loans has
+therefore been hard to replicate and impossible to share.</p>
+<p>US registered investment funds, however, report every loan they hold to the SEC, with notional and fair value.
+Aggregated across funds, these filings track the loan market closely, as Figure 1 shows. This site turns them into
+factor returns that are free to use, cite and extend.</p>
+
+<h2>What you get</h2>
+<ul>
+<li>Monthly returns of long-short, quintile and benchmark portfolios for Value, Momentum, Illiquidity, Quality,
+Low Risk, Carry, IVOL, BAB and a combination factor, plus a market index.</li>
+<li>Equal-weighted, value-weighted and capped value-weighted versions, holding periods of 1, 3, 6 and 12 months,
+with and without a one-month implementation lag, as excess and total returns.</li>
+<li>Summary statistics including Dimson alphas, signal distributions and universe statistics.</li>
+<li>The complete open-source pipeline from the SEC filings to the published files.</li>
+</ul>
+<p><a href="factors.html">See the factor definitions</a> or <a href="data.html">go to the data</a>.</p>
+
+</div></main>
+<footer class="site-footer"><div class="wrap">
+<span>© 2026 Thomas Mählmann. Data CC BY 4.0, code MIT.</span>
+<nav aria-label="Footer"><a href="data.html#cite">Cite</a><a href="https://github.com/thomasmaehlmann-ctrl/leveraged-loan-factors">GitHub</a><a href="impressum.html">Legal notice</a><a href="datenschutz.html">Privacy</a></nav>
+</div></footer>
+<script src="js/meta.js?v=17bfea91" defer></script>
+<script src="js/leaderboard.js?v=b98e2753" defer></script>
+</body>
+</html>

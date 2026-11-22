@@ -49,6 +49,18 @@ RUNS = {
     "repayment_80": ["--repay-price", "80"],
     "observed_coupons": ["--no-imputed"],
 }
+CHANGES = {
+    "2026.12.1": [
+        "Currency correction: a USD tag is replaced only if cost clearly exceeds principal (loans in GBP, EUR or CHF "
+        "tagged as USD). Version 2026.12 also reassigned USD loans with a low ratio of cost to principal (discounts, "
+        "partially drawn tranches) to Nordic and other currencies, so that some USD loans entered the index.",
+        "Weights in US dollars: principal is converted at the exchange rate of the first quarter-end of each position. "
+        "Version 2026.12 weighted positions by their value in loan currency, which overweighted SEK, NOK and DKK loans.",
+        "Linking: each BDC is compared with its own previous filing, and distinctive words are determined separately "
+        "for European and other currencies. Positions are found again more reliably.",
+        "Effect: main index 9.88% p.a. (9.91% in version 2026.12); value-weighted index 9.09% (9.54%).",
+    ],
+}
 COMP = {"total": "total", "income": "income", "accretion": "accretion", "price_ret": "price",
         "realized_cost": "realized", "unrealized_cost": "unrealized"}
 
@@ -227,6 +239,21 @@ def main() -> None:
     }
     (out / "metadata.json").write_text(json.dumps(meta, indent=2), encoding="utf-8")
 
+    vt = []
+    nb = val.get("same_loan_nport_vs_bdc_same_manager")
+    if nb:
+        vt.append(f"The same loans valued by the same manager in a registered fund (Form N-PORT) and in a BDC differ by a "
+                  f"median of {nb['median_abs_diff']:.2f} points ({nb['within_1pt']:.0%} within one point).")
+    fl, vwv = val.get("vw_first_lien"), val.get("vw_all")
+    if fl and vwv:
+        vt.append(f"Compared with the S&P Lincoln European Senior Debt Index over {fl['quarters']} common quarters, the "
+                  f"first-lien sub-index has a correlation of {fl['corr_esdi']:.2f} and differs by "
+                  f"{fl['diff_esdi_pp_pa']:+.2f} percentage points per year; the value-weighted index of all loans by "
+                  f"{vwv['diff_esdi_pp_pa']:+.2f} points. Part of the difference reflects the measurement of income: the "
+                  f"index uses contractual coupons, without fees and the accretion of discounts.")
+    validation_text = (" ".join(vt) + "\n\n") if vt else ""
+    changes = CHANGES.get(args.version, [])
+    changes_text = ("\n## Changes in version " + args.version + "\n\n" + "".join(f"- {c}\n" for c in changes)) if changes else ""
     readme = f"""# OpenDL Europe: BDC European Direct Lending Index (v{args.version})
 
 Quarterly return index of European direct lending (middle market loans in European currencies), constructed
@@ -263,10 +290,8 @@ estimated cost basis follow OpenDL US (Registered Fund Direct Lending Index).
 
 ## Validation (see metadata.json)
 
-The same loans valued by the same manager in a registered fund (Form N-PORT) and in a BDC differ by a median of
-less than 0.2 points. Compared with the S&P Lincoln European Senior Debt Index, the first-lien sub-index differs by
-about 0.25 percentage points per year. No third-party index data are included in this release.
-
+{validation_text}No third-party index data are included in this release.
+{changes_text}
 ## Open items
 
 - Payment-in-kind interest: the XBRL fact InvestmentInterestRatePaidInKind will be included from the next update.

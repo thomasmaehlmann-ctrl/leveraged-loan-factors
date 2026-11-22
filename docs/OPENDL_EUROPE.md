@@ -23,7 +23,7 @@ development companies (BDCs). Returns, exits, recoveries and weighting follow Op
 | Equity, cash | identifier mentions equity, shares, units, warrants etc. without debt terms; money market funds |
 | Instruments excluded | revolvers, delayed-draw tranches, bonds and notes, equipment finance, CLO tranches and structured finance |
 | BDCs excluded | real estate, infrastructure, asset-based, venture and SBA lenders (by name) |
-| Currency correction | cost (USD, historical rates) / principal ≈ USD value of one unit of the true currency; if the tagged currency is off by more than 15% and another fits within 8%, the currency is replaced |
+| Currency correction | cost (USD, historical rates) / principal ≈ USD value of one unit of the true currency; if the tagged currency is off by more than 15% and another fits within 8%, the currency is replaced. A USD tag is replaced only if cost exceeds principal by more than 15% (GBP, EUR or CHF loans tagged as USD), because low ratios are common for USD loans (discounts, partially drawn tranches) |
 | Prices | fair value / quarter-end exchange rate (Federal Reserve H.10 via FRED) / principal × 100 |
 | Temporary collapses | a price below 60% of the previous and of a later price of the same position is dropped (repeatedly) |
 
@@ -32,11 +32,11 @@ development companies (BDCs). Returns, exits, recoveries and weighting follow Op
 - **Key:** identifier without volatile parts (rates, spreads, reference-rate names, percentages, dates,
   maturities), headings (currency groups, affiliation notes such as "Non-Affiliated Issuer"), link remnants and
   trailing tranche numbers (digits or words). Tranches with the same key, BDC and currency are combined.
-- **Linking:** a position without exact match in the next quarter is linked to the most similar unmatched position
-  of the same BDC and currency if (a) the distinctive words of the keys (words occurring in few keys of the
-  BDC-quarter) overlap by at least 75%, or the string similarity is at least 0.85, and (b) the principal changed by
+- **Linking:** each BDC is compared with its own previous filing (BDCs report at different month-ends). A position
+  without exact match is linked to the most similar unmatched position of the same BDC and currency if (a) the distinctive words of the keys (words occurring in few keys of the
+  BDC-quarter, determined separately for European and other currencies; candidate pairs via an inverted index) overlap by at least 75%, or the string similarity is at least 0.85, and (b) the principal changed by
   less than a factor of two (factor five for delayed-draw tranches or identical names).
-- **Tracking:** about 86% of positions are found again in the next quarter from 2023 on.
+- **Tracking:** about 85% of European and 90% of US dollar positions are found again in the next quarter from 2023 on.
 
 ## 4. Returns (`eu_index.py`)
 
@@ -50,18 +50,21 @@ development companies (BDCs). Returns, exits, recoveries and weighting follow Op
   same BDC in the next quarter (matched by distinctive words) are not exits. BDC-quarters in which fewer than half
   of at least five positions are found again are treated as identifier changes (no exits).
 - **Principal jumps:** no return for quarters in which the principal more than doubled or halved.
+- **Weights:** in US dollars; principal is converted at the exchange rate of the first quarter-end of each position
+  (returns stay in loan currency).
 - **Indices:** main index equal-weighted across managers with at least 10 positions; value-weighted index; without
   the largest manager; sub-indices for first lien, EUR and GBP.
 
 ## 5. Validation
 
-| Check | Result (v2026.12) |
+| Check | Result (v2026.12.1) |
 |---|---|
-| Same loans, same manager, N-PORT vs. BDC data | 311 pairs, median difference 0.18 points, 88% within 1 point |
-| Same borrower, different managers (BDC data) | 3,009 pairs; 71% within 1 point at 98 and above; 16% within 1 point at 90–95 |
-| S&P Lincoln European Senior Debt Index, first-lien sub-index | correlation 0.83, –0.25 pp p.a. |
-| S&P Lincoln European Senior Debt Index, value-weighted index | correlation 0.80, –0.84 pp p.a. |
-| Robustness | 9.3–10.4% p.a. across variants; repayment threshold 80: up to +1.6 pp p.a. (published as upper bound) |
+| Same loans, same manager, N-PORT vs. BDC data | 312 pairs, median difference 0.18 points, 88% within 1 point |
+| Same borrower, different managers (BDC data) | 2,910 pairs; 72% within 1 point at 98 and above; 10% within 1 point at 90–95 |
+| S&P Lincoln European Senior Debt Index, first-lien sub-index | correlation 0.67, –0.80 pp p.a. |
+| S&P Lincoln European Senior Debt Index, value-weighted index | correlation 0.84, –1.68 pp p.a. |
+| Same method applied to USD loans of BDCs vs. Cliffwater Direct Lending Index | correlation 0.97 (price returns 0.98), –0.9 pp p.a., of which –0.7 pp income (coupons vs. income statements) |
+| Robustness (main index) | 8.8–11.3% p.a.; repayment threshold 80: +1.4 pp p.a. (published as upper bound) |
 
 ## 6. Limitations and open items
 

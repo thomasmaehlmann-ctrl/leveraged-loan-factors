@@ -95,6 +95,9 @@ def fix_currency(h: pd.DataFrame, fx: pd.DataFrame) -> pd.DataFrame:
     best_err = err.min(axis=1).replace(np.inf, np.nan)
     err_tag = err_tag.replace(np.inf, np.nan)
     fix = ratio.notna() & (err_tag > 0.15) & (best_err < 0.08) & (best != tagged)
+    # a USD tag is only replaced if cost clearly exceeds principal (a loan in GBP, EUR or CHF tagged as USD);
+    # a low ratio of cost to principal is common for USD loans (discounts, partially drawn tranches)
+    fix &= ~tagged.eq("USD") | ((ratio > 1.15) & best.isin(["GBP", "EUR", "CHF"]))
     if fix.any():
         print(f"Currency corrected for {fix.sum():,} holdings; most frequent changes:")
         print((tagged[fix] + " -> " + best[fix]).value_counts().head(8).to_string())
@@ -115,10 +118,11 @@ def distinctive(pos: pd.DataFrame) -> pd.Series:
     """Words of a key that occur in few keys of the same BDC and quarter (names rather than industries,
     headings or instrument descriptions)."""
     out = pd.Series(index=pos.index, dtype=object)
-    for _, g in pos.groupby(["cik", "month_end"]):
+    grp = pos["ccy"].isin(bpanel.EU_CCY) if "ccy" in pos else pd.Series(True, index=pos.index)
+    for _, g in pos.groupby([pos["cik"], pos["month_end"], grp]):
         toks = g["key"].map(lambda k: set(tokens(k)) - STOP)
         df = pd.Series([t for s in toks for t in s]).value_counts()
-        lim = max(2, 0.05 * len(g))
+        lim = max(2, min(0.05 * len(g), 10))
         out.loc[g.index] = toks.map(lambda s: frozenset(t for t in s if df.get(t, 0) <= lim))
     return out
 
@@ -162,16 +166,20 @@ def link(pos: pd.DataFrame, min_sim: float) -> tuple[pd.DataFrame, int]:
     mapping: dict[tuple, str] = {}                 # (cik, ccy, raw key) -> linked key
     n_links = 0
     qs = sorted(pos["month_end"].unique())
-    prev = None
+    last_by_cik: dict = {}                          # latest earlier observation of each BDC
     for q in qs:
         idx = pos.index[pos["month_end"] == q]
         cur = pos.loc[idx]
         keys = [mapping.get((c, y, k), k) for c, y, k in zip(cur["cik"], cur["ccy"], cur["key_raw"])]
         pos.loc[idx, "key"] = keys
-        if prev is not None:
+        if last_by_cik:
             cur = pos.loc[idx]
             for (cik, ccy), g in cur.groupby(["cik", "ccy"]):
-                p = prev[(prev["cik"] == cik) & (prev["ccy"] == ccy)]
+                lp = last_by_cik.get(cik)
+                if lp is None or (pd.Timestamp(q) - pd.Timestamp(lp[0])).days > 200:
+                    continue
+                prev = lp[1]
+                p = prev[prev["ccy"] == ccy]
                 if p.empty:
                     continue
                 gone = p[~p["key"].isin(set(g["key"]))]
@@ -179,8 +187,19 @@ def link(pos: pd.DataFrame, min_sim: float) -> tuple[pd.DataFrame, int]:
                 if gone.empty or new.empty:
                     continue
                 cand = []
+                # candidate pairs: share at least one distinctive word (inverted index); small groups: all pairs
+                inv: dict[str, list[int]] = {}
+                gone_rows = list(gone.itertuples(index=False))
+                for j, ro in enumerate(gone_rows):
+                    for t in (ro.dist or ()):
+                        inv.setdefault(t, []).append(j)
                 for i, rn in new.iterrows():
-                    for _, ro in gone.iterrows():
+                    if len(gone_rows) <= 50:
+                        js = range(len(gone_rows))
+                    else:
+                        js = sorted({j for t in (rn["dist"] or ()) for j in inv.get(t, ())})
+                    for j in js:
+                        ro = gone_rows[j]._asdict()
                         ratio = rn["par"] / ro["par"] if ro["par"] else np.inf
                         s = similarity(rn["key"], ro["key"])
                         dn, do = rn["dist"], ro["dist"]
@@ -202,7 +221,9 @@ def link(pos: pd.DataFrame, min_sim: float) -> tuple[pd.DataFrame, int]:
                     pos.loc[i, "key"] = old_key
                     mapping[(cik, ccy, raw)] = old_key
                     n_links += 1
-        prev = pos.loc[idx, ["cik", "ccy", "key", "par", "dist", "instrument"]]
+        cur = pos.loc[idx, ["cik", "ccy", "key", "par", "dist", "instrument"]]
+        for cik, g in cur.groupby("cik"):
+            last_by_cik[cik] = (q, g)
     # positions that now share a key within the same quarter are combined
     agg = {"par": "sum", "fv_usd": "sum", "fv_local": "sum", "cost_usd": "sum", "n_tranches": "sum",
            "instrument": "first", "eu_ccy": "max", "eu_borrower": "max", "ident": "first", "key_raw": "first",
@@ -212,8 +233,9 @@ def link(pos: pd.DataFrame, min_sim: float) -> tuple[pd.DataFrame, int]:
     return pos, n_links
 
 
-def tracking(pos: pd.DataFrame) -> pd.DataFrame:
-    q = pos[pos["dl_bdc"] & pos["eu_ccy"] & pos["month_end"].dt.month.isin([3, 6, 9, 12])]
+def tracking(pos: pd.DataFrame, region: str = "europe") -> pd.DataFrame:
+    sel = pos["eu_ccy"] if region == "europe" else pos["ccy"].eq("USD")
+    q = pos[pos["dl_bdc"] & sel & pos["month_end"].dt.month.isin([3, 6, 9, 12])]
     qs = sorted(q["month_end"].unique())
     rows = []
     for a, b in zip(qs[:-1], qs[1:]):
@@ -254,6 +276,10 @@ def main() -> None:
     print(f"Links between renamed positions: {n:,}")
     print("\n=== Tracking of European-currency positions (share found again next quarter) ===")
     print(t[["quarter", "positions_exact", "share_exact", "positions_linked", "share_linked"]].round(3).to_string(index=False))
+    if args.all_currencies:
+        tu = tracking(pos, "us").merge(tracking(out, "us"), on="quarter", suffixes=("_exact", "_linked"))
+        print("\n=== Tracking of US dollar positions ===")
+        print(tu[["quarter", "positions_exact", "share_exact", "share_linked"]].round(3).to_string(index=False))
     print(f"\nSaved: {d}/bdc_positions.parquet")
 
 
