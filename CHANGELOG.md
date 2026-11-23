@@ -7,6 +7,7 @@
 - `eu_index.py`: `--no-collapse-filter`; `eu_robustness.py`: base specification with 10 loans per manager, variants without the collapse filter and with observed coupons only
 - `website/make_dl_web.py`: OpenDL US BDC and the overview of the three indices; `website/loanfactors.org/`: page for OpenDL US BDC
 - `papers/opendl_bdc_paper/`: sources and build scripts of the working paper on BDC filings
+- `README.md`: section on OpenDL Europe and OpenDL US BDC, full run sequence for the three direct lending indices, further folders, concept DOIs in the citations; `CITATION.cff`: OpenDL US BDC
 
 ## v2026.12.3
 - OpenDL Europe v2026.12.1 (data release): corrections of version 2026.12

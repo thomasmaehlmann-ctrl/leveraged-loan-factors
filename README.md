@@ -13,9 +13,14 @@ price panel that tracks the Morningstar LSTA US Leveraged Loan Index with a mont
 correlation of 0.995 (2019-10 to 2026-07). This repository turns these public filings into a
 factor database in the spirit of [JKP Factors](https://jkpfactors.com).
 
+The repository also contains the code of the **Open Direct Lending Indices** (see below): OpenDL Europe and OpenDL US
+BDC, built from the schedules of investments of business development companies, and OpenDL US, built from the Form
+N-PORT holdings of registered closed-end funds. All are presented on https://loanfactors.org.
+
 - **Data releases:** Zenodo, [doi:10.5281/zenodo.24113424](https://doi.org/10.5281/zenodo.24113424) (all versions, resolves to the latest release); current release v2026.12: [doi:10.5281/zenodo.24202315](https://doi.org/10.5281/zenodo.24202315)
 - **Software (this repository):** Zenodo, [doi:10.5281/zenodo.24114954](https://doi.org/10.5281/zenodo.24114954) (all versions, resolves to the latest release)
 - **Methods paper:** [Leveraged Loan Factors from Public Data](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=7704758) (SSRN)
+- **Direct lending paper:** [Direct Lending Returns from Public Data](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=7733980) (SSRN)
 - **Author:** Thomas Mählmann
 - **Licenses:** code MIT, data CC BY 4.0
 
@@ -144,7 +149,7 @@ See `docs/METHODOLOGY.md` and the [methods paper](https://papers.ssrn.com/sol3/p
 The folder `direct_lending/` builds a quarterly return index of US direct lending from the same N-PORT data:
 middle market loans held by US registered closed-end funds (interval, tender offer and listed credit funds).
 Methodology: [docs/DIRECT_LENDING.md](docs/DIRECT_LENDING.md) and https://loanfactors.org/dl-methodology.html.
-Data release: Zenodo, [doi:10.5281/zenodo.24280967](https://doi.org/10.5281/zenodo.24280967) (all versions); v2026.12: [doi:10.5281/zenodo.24280968](https://doi.org/10.5281/zenodo.24280968).
+Data release: Zenodo, [doi:10.5281/zenodo.24280967](https://doi.org/10.5281/zenodo.24280967) (all versions).
 
 | Script | Purpose |
 |---|---|
@@ -171,13 +176,17 @@ Comparisons with the Cliffwater Direct Lending Index (`--cdli`, `--cdli-annual`)
 must obtain themselves; they are not part of this repository or the data releases. "Cliffwater Direct Lending
 Index" and "CDLI" are trademarks of Cliffwater LLC; the index is independent of and not endorsed by Cliffwater.
 
-## Direct lending: OpenDL Europe (BDC European Direct Lending Index)
+## Direct lending from BDC filings: OpenDL Europe and OpenDL US BDC
 
-OpenDL Europe measures European direct lending (loans in EUR, GBP and other European currencies) from the
-XBRL-tagged schedules of investments of US business development companies (BDCs), published by the SEC in the
-Financial Statement and Notes data sets. Data release: Zenodo,
-[doi:10.5281/zenodo.24396813](https://doi.org/10.5281/zenodo.24396813) (all versions). Methodology:
-[docs/OPENDL_EUROPE.md](docs/OPENDL_EUROPE.md) and https://loanfactors.org/dl-methodology.html#europe.
+Both indices are built from the XBRL-tagged schedules of investments of US business development companies (BDCs),
+published by the SEC in the Financial Statement and Notes data sets, with one procedure:
+
+- **OpenDL Europe** (BDC European Direct Lending Index): loans in EUR, GBP and other European currencies. Data
+  release: Zenodo, [doi:10.5281/zenodo.24396813](https://doi.org/10.5281/zenodo.24396813) (all versions).
+- **OpenDL US BDC** (BDC US Direct Lending Index): US dollar loans. Data release: Zenodo,
+  [doi:10.5281/zenodo.24463013](https://doi.org/10.5281/zenodo.24463013) (all versions).
+
+Methodology: [docs/OPENDL_EUROPE.md](docs/OPENDL_EUROPE.md) and https://loanfactors.org/dl-methodology.html.
 
 | Script (in `direct_lending/`) | Purpose |
 |---|---|
@@ -189,8 +198,8 @@ Financial Statement and Notes data sets. Data release: Zenodo,
 | `eu_index.py` | OpenDL Europe: returns, exits, recoveries, weighting, barometer, comparison with an external benchmark (optional) |
 | `eu_diag.py`, `eu_exits.py` | Diagnostics: low prices, extreme returns, exits checked against other managers |
 | `eu_robustness.py` | Sensitivity variants |
-| `eu_loanlevel.py` | Loan-level validation: different managers; same loans in N-PORT and BDC data |
-| `eu_export.py` | Versioned data release |
+| `eu_loanlevel.py` | Loan-level validation: different managers; the same borrowers in N-PORT and BDC data |
+| `eu_export.py` | Versioned data release of OpenDL Europe |
 | `us_bdc_export.py` | Versioned data release of OpenDL US BDC (US dollar loans of BDCs, same procedure) |
 | `us_vehicles.py` | Same borrowers in registered funds and BDCs: agreement, managers, first quarter of 2026 |
 | `eu_feasibility.py` | Feasibility of European indices from N-PORT (registered funds) |
@@ -200,14 +209,26 @@ Run from a working folder that contains the scripts of `direct_lending/` and the
 
 ```
 python bdc_panel.py --user-agent "Name name@university.edu"
-python bdc_link.py
-python eu_index.py --min-positions 10
-python eu_export.py --version 2026.12 --zip
-python website/make_dl_web.py --release releases/dlindex_v2026.12 --eu-release releases/opendl_europe_v2026.12 --site loanfactors.org
+python bdc_link.py --all-currencies
+python eu_index.py --min-positions 10                  # OpenDL Europe
+python eu_index.py --region us --min-positions 10      # OpenDL US BDC
+python eu_export.py --version 2026.12.1 --zip
+python us_bdc_export.py --version 2026.12 --zip
+python website/make_dl_web.py --release releases/dlindex_v2026.12 --eu-release releases/opendl_europe_v2026.12.1 \
+       --us-bdc-release releases/opendl_us_bdc_v2026.12 --site loanfactors.org
 ```
 
-Comparisons with the S&P Lincoln European Senior Debt Index (`--esdi`) require index returns that users must
-compile themselves; they are not part of this repository or the data releases.
+Comparisons with the S&P Lincoln European Senior Debt Index (`--esdi`) and the Cliffwater Direct Lending Index
+(`--cdli`) require index returns that users must compile themselves; they are not part of this repository or the
+data releases.
+
+## Further folders
+
+| Folder | Content |
+|---|---|
+| `website/loanfactors.org/` | Static pages of the website (the data files and charts are generated by the scripts in `website/`) |
+| `papers/opendl_bdc_paper/` | Sources and build scripts of the working paper "Private Credit Valuations from Public BDC Filings" |
+| `docs/` | Methodology documents |
 
 ## Citation
 
@@ -224,19 +245,18 @@ and the data release you use:
 To always refer to the latest release, use the concept DOI https://doi.org/10.5281/zenodo.24113424.
 If you use or adapt the pipeline, please also cite the software:
 
-> Mählmann, T. (2026). *Leveraged Loan Factors* (Version v2026.12) [Computer software]. Zenodo.
+> Mählmann, T. (2026). *Leveraged Loan Factors* [Computer software]. Zenodo.
 > https://doi.org/10.5281/zenodo.24114954
 
 The "Cite this repository" button on GitHub (from `CITATION.cff`) provides APA and BibTeX formats.
-
 
 For the direct lending indices:
 
 > Mählmann, T. (2026). Direct Lending Returns from Public Data: An Open Index and What It Reveals about Private
 > Credit Valuations. Working paper, SSRN. https://ssrn.com/abstract=7733980
 
-> Mählmann, T. (2026). *OpenDL US: Registered Fund Direct Lending Index* (Version 2026.12) [Data set]. Zenodo.
-> https://doi.org/10.5281/zenodo.24280968
+> Mählmann, T. (2026). *OpenDL US: Registered Fund Direct Lending Index* [Data set]. Zenodo.
+> https://doi.org/10.5281/zenodo.24280967
 
 > Mählmann, T. (2026). *OpenDL Europe: BDC European Direct Lending Index* [Data set]. Zenodo.
 > https://doi.org/10.5281/zenodo.24396813
