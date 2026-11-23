@@ -2,15 +2,18 @@ cff-version: 1.2.0
 message: "If you use this software or the data releases, please cite them as below."
 title: "Leveraged Loan Factors"
 abstract: >-
-  Open-source pipeline and data releases of factor returns for US leveraged loans,
-  built from public SEC Form N-PORT filings of US registered investment funds.
+  Open-source pipeline and data releases of factor returns for US leveraged loans, built from public SEC Form
+  N-PORT filings of US registered investment funds, and of the Open Direct Lending Indices (OpenDL Europe,
+  OpenDL US BDC and OpenDL US), built from the schedules of investments of business development companies and
+  the Form N-PORT holdings of registered closed-end funds.
 authors:
   - family-names: "Mählmann"
     given-names: "Thomas"
-version: "v2026.12"
-date-released: "2026-11-13"
+version: "v2026.12.4"
+date-released: "2026-11-23"
 license: MIT
 repository-code: "https://github.com/thomasmaehlmann-ctrl/leveraged-loan-factors"
+url: "https://loanfactors.org"
 doi: "10.5281/zenodo.24114954"
 identifiers:
   - type: doi
@@ -19,8 +22,11 @@ identifiers:
 keywords:
   - leveraged loans
   - factor investing
-  - private debt
+  - direct lending
+  - private credit
+  - business development companies
   - SEC Form N-PORT
+  - XBRL
 preferred-citation:
   type: article
   title: "Leveraged Loan Factors from Public Data"
@@ -33,12 +39,32 @@ preferred-citation:
     name: "SSRN"
   url: "https://papers.ssrn.com/sol3/papers.cfm?abstract_id=7704758"
 references:
+  - type: article
+    title: "Direct Lending Returns from Public Data: An Open Index and What It Reveals about Private Credit Valuations"
+    authors:
+      - family-names: "Mählmann"
+        given-names: "Thomas"
+    year: 2026
+    notes: "Working paper (OpenDL US)"
+    publisher:
+      name: "SSRN"
+    url: "https://papers.ssrn.com/sol3/papers.cfm?abstract_id=7733980"
+  - type: article
+    title: "Private Credit Valuations from Public BDC Filings: An Open European Index and Evidence on Manager Differences"
+    authors:
+      - family-names: "Mählmann"
+        given-names: "Thomas"
+    year: 2026
+    notes: "Working paper (OpenDL Europe and OpenDL US BDC)"
+    publisher:
+      name: "SSRN"
+    url: "https://papers.ssrn.com/sol3/papers.cfm?abstract_id=7744839"
   - type: data
     title: "Leveraged Loan Factors"
     authors:
       - family-names: "Mählmann"
         given-names: "Thomas"
-    version: "2026.12"
+    year: 2026
     doi: "10.5281/zenodo.24113424"
     url: "https://doi.org/10.5281/zenodo.24113424"
     publisher:
@@ -49,7 +75,6 @@ references:
       - family-names: "Mählmann"
         given-names: "Thomas"
     year: 2026
-    version: "2026.12"
     doi: "10.5281/zenodo.24280967"
     publisher:
       name: "Zenodo"
@@ -59,7 +84,6 @@ references:
       - family-names: "Mählmann"
         given-names: "Thomas"
     year: 2026
-    version: "2026.12"
     doi: "10.5281/zenodo.24396813"
     publisher:
       name: "Zenodo"
@@ -69,7 +93,6 @@ references:
       - family-names: "Mählmann"
         given-names: "Thomas"
     year: 2026
-    version: "2026.12"
     doi: "10.5281/zenodo.24463013"
     publisher:
       name: "Zenodo"
