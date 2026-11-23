@@ -73,4 +73,30 @@
       b.innerHTML = g + "</tbody>";
     }
   }).catch(function () {});
+  get("data/dl_usbdc.json").then(function (d) {
+    var k = d.key, v = d.validation || {}, vw = v.vw_all || {},
+        sm = v.same_borrower_registered_fund_vs_bdc_same_manager || {};
+    fill("data-usb", {
+      version: d.version, start: d.start, end: d.end, last_quarter: d.last_quarter,
+      last_q: pct(k.last_quarter_pct), t4q: pct(k.t4q_pct), ann: pct(k.annualized_pct), vol: pct(k.vol_pct),
+      managers: k.managers, positions: Number(k.positions).toLocaleString("en-US"), bdcs: k.bdcs,
+      mv: "$" + fmt(k.market_value_bn, 0) + "bn", largest: k.largest_share_pct + "%",
+      b90: pct(k.below90_pct, 1), b80: pct(k.below80_pct, 1),
+      corr_vw: fmt(vw.corr_cdli), diff_vw: fmt(vw.diff_cdli_pp_pa, 1), corr_price: fmt(vw.corr_price),
+      price_idx: pct(vw.price_pa_index), price_cdli: pct(vw.price_pa_cdli),
+      sm_med: fmt(sm.median_abs_diff, 2), sm_w1: sm.within_1pt !== undefined ? Math.round(sm.within_1pt * 100) + "%" : "–",
+      doi: d.doi
+    }, d);
+    qtable("usb-q", d);
+    var b = document.getElementById("usb-b");
+    if (b) {
+      var g = "<thead><tr><th>Quarter-end</th><th>Marked &lt; 80</th><th>Marked &lt; 90</th><th>Marked &lt; 90<br>ex largest manager</th>" +
+              "<th>Realized<br>(4 quarters)</th><th>Unrealized<br>(4 quarters)</th></tr></thead><tbody>";
+      d.barometer.forEach(function (q) {
+        g += "<tr><td>" + q.q + "</td><td>" + pct(q.marked_below_80_pct) + "</td><td>" + pct(q.marked_below_90_pct) + "</td><td>" +
+             pct(q.marked_below_90_pct_ex_largest) + "</td><td>" + pct(q.realized_t4q_pct) + "</td><td>" + pct(q.unrealized_t4q_pct) + "</td></tr>";
+      });
+      b.innerHTML = g + "</tbody>";
+    }
+  }).catch(function () {});
 })();

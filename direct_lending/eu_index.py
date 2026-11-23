@@ -82,6 +82,8 @@ def main() -> None:
     ap.add_argument("--nonaccrual-price", type=float, default=70.0,
                     help="loans valued below this are treated as non-accrual (BDCs do not tag non-accrual status)")
     ap.add_argument("--base-csv", default=None, help="CSV with month_end, ccy, base (instead of FRED)")
+    ap.add_argument("--no-collapse-filter", action="store_true",
+                    help="keep temporary collapses of prices (robustness of the reporting-error rule)")
     ap.add_argument("--no-imputed", action="store_true", help="drop positions whose coupon had to be imputed")
     ap.add_argument("--ccy", nargs="*", default=None, help="restrict to these loan currencies (e.g. EUR GBP)")
     ap.add_argument("--first-lien-only", action="store_true", help="only positions identified as first lien")
@@ -124,7 +126,7 @@ def main() -> None:
     #      is treated as a reporting error (e.g. a tranche reported without fair value) and dropped
     p = p.sort_values(["cik", "key", "ccy", "month_end"])
     n_drop = 0
-    for _ in range(4):                        # repeated, so that collapses over several quarters are removed
+    for _ in range(0 if args.no_collapse_filter else 4):   # repeated, so that collapses over several quarters are removed
         g = p.groupby(["cik", "key", "ccy"])["price"]
         prev = g.shift(1)
         later_max = g.transform(lambda x: x[::-1].cummax()[::-1].shift(-1))

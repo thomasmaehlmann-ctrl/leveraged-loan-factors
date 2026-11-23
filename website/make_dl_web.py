@@ -51,6 +51,7 @@ def main() -> None:
     ap = argparse.ArgumentParser(description="Web data and charts for the direct lending index")
     ap.add_argument("--release", default=None, help="release of OpenDL US (dl_export.py)")
     ap.add_argument("--eu-release", default=None, help="release of OpenDL Europe (eu_export.py)")
+    ap.add_argument("--us-bdc-release", default=None, help="release of OpenDL US BDC (us_bdc_export.py)")
     ap.add_argument("--site", default="loanfactors.org")
     ap.add_argument("--ll-release", default=None)
     args = ap.parse_args()
@@ -59,6 +60,10 @@ def main() -> None:
     (site / "img").mkdir(parents=True, exist_ok=True)
     if args.eu_release:
         eu_web(Path(args.eu_release), site, Path(args.release) if args.release else None)
+    if args.us_bdc_release:
+        usbdc_web(Path(args.us_bdc_release), site)
+        if args.eu_release and args.release:
+            overview_chart(site, Path(args.eu_release), Path(args.us_bdc_release), Path(args.release))
     if not args.release:
         return
     rel = Path(args.release)
@@ -329,6 +334,130 @@ def eu_web(rel: Path, site: Path, us_rel: Path | None) -> None:
         plt.close(fig)
     print(f"Written: data/dl_eu.json, data/dl_eu_series.json, img/dl_eu_index.svg, img/dl_eu_barometer.svg"
           f"{', img/dl_overview.svg' if us_rel else ''}")
+
+
+def usbdc_web(rel: Path, site: Path) -> None:
+    """Data files and charts for OpenDL US BDC."""
+    meta = json.loads((rel / "metadata.json").read_text(encoding="utf-8"))
+    r = pd.read_csv(rel / "opendl_us_bdc_returns.csv", parse_dates=["date"])
+    sub = pd.read_csv(rel / "opendl_us_bdc_subindices.csv", parse_dates=["date"])
+    var = pd.read_csv(rel / "opendl_us_bdc_variants.csv", parse_dates=["date"])
+    bar = pd.read_csv(rel / "opendl_us_bdc_barometer.csv", parse_dates=["date"]).set_index("date").sort_index()
+    uni = pd.read_csv(rel / "opendl_us_bdc_universe.csv", parse_dates=["date"]).set_index("date").sort_index()
+    m = r[r["index"] == "ew_managers"].set_index("date").sort_index()
+    vw = r[r["index"] == "vw_all"].set_index("date").sort_index()
+    lu, lb = uni.iloc[-1], bar.iloc[-1]
+    data = {
+        "version": meta.get("version", ""), "doi": meta.get("doi", ""), "start": qlab(m.index.min()),
+        "end": qlab(m.index.max()), "last_quarter": qlab(m.index.max()),
+        "key": {"last_quarter_pct": round(m["total"].iloc[-1] * 100, 2),
+                "t4q_pct": round(((1 + m["total"].tail(4)).prod() - 1) * 100, 2),
+                "annualized_pct": round(((1 + m["total"]).prod() ** (4 / len(m)) - 1) * 100, 2),
+                "vol_pct": round(m["total"].std() * 200, 2), "managers": int(m["managers"].iloc[-1]),
+                "positions": int(lu["positions"]), "bdcs": int(lu["bdcs"]),
+                "market_value_bn": round(float(lu["market_value_usd_bn"]), 1),
+                "largest_share_pct": round(float(lu["largest_manager_share"]) * 100),
+                "below90_pct": round(float(lb["marked_below_90_pct"]), 1),
+                "below80_pct": round(float(lb["marked_below_80_pct"]), 1)},
+        "validation": meta.get("validation", {}),
+        "quarters": [{"q": qlab(d), "ew": round(m.loc[d, "total"] * 100, 2), "ew_income": round(m.loc[d, "income"] * 100, 2),
+                      "ew_price": round(m.loc[d, "price"] * 100, 2),
+                      "vw": round(vw.loc[d, "total"] * 100, 2) if d in vw.index else None,
+                      "managers": int(m.loc[d, "managers"]), "positions": int(m.loc[d, "positions"])}
+                     for d in m.index[::-1]],
+        "barometer": [{"q": qlab(d), **{k: (None if pd.isna(v) else round(float(v), 2)) for k, v in row.items()}}
+                      for d, row in bar.iloc[::-1].iterrows()],
+    }
+    (site / "data" / "dl_usbdc.json").write_text(json.dumps(data, indent=1), encoding="utf-8")
+
+    def clean(x):
+        return None if pd.isna(x) else round(float(x) * 100, 4)
+    labels = {"ew_managers": "Main index", "vw_all": "Value-weighted", "vw_ex_largest": "Value-weighted ex largest manager"}
+    series = {}
+    for code, lab in labels.items():
+        s_ = r[r["index"] == code].set_index("date").sort_index()
+        series[code] = {"label": lab, "group": "Published indices", "q": [qlab(d) for d in s_.index],
+                        **{c: [clean(v) for v in s_[c]] for c in ["total", "income", "accretion", "price", "realized", "unrealized"]}}
+    for code, g in sub.groupby("series"):
+        g = g.set_index("date").sort_index()
+        series[code] = {"label": "First lien (value-weighted)", "group": "Sub-indices", "q": [qlab(d) for d in g.index],
+                        **{c: [clean(v) for v in g[c]] for c in ["total", "income", "price"]}}
+    vnames = {"repayment_80": "repayment threshold 80", "observed_coupons": "observed coupons only"}
+    for (vn, ic), g in var.groupby(["variant", "index"]):
+        g = g.set_index("date").sort_index()
+        series[f"{ic}__{vn}"] = {"label": f"{'Main index' if ic == 'ew_managers' else 'Value-weighted'}: {vnames.get(vn, vn)}",
+                                 "group": "Sensitivity", "q": [qlab(d) for d in g.index],
+                                 **{c: [clean(x) for x in g[c]] for c in ["total", "income", "price"]}}
+    blab = {"marked_below_80_pct": "Loans marked below 80 (% of cost)", "marked_below_90_pct": "Loans marked below 90 (% of cost)",
+            "realized_t4q_pct": "Realized gains/losses, last 4 quarters (%)",
+            "unrealized_t4q_pct": "Unrealized gains/losses, last 4 quarters (%)"}
+    baro = {"q": [qlab(d) for d in bar.index], "metrics": {}}
+    for c, lab in blab.items():
+        if c in bar:
+            ex = c + "_ex_largest"
+            baro["metrics"][c] = {"label": lab, "all": [None if pd.isna(x) else round(float(x), 3) for x in bar[c]],
+                                  "ex": ([None if pd.isna(x) else round(float(x), 3) for x in bar[ex]] if ex in bar else None)}
+    universe = {"q": [qlab(d) for d in uni.index],
+                **{c: [None if pd.isna(x) else round(float(x), 4) for x in uni[c]]
+                   for c in ["positions", "bdcs", "managers", "market_value_usd_bn", "largest_manager_share"] if c in uni}}
+    (site / "data" / "dl_usbdc_series.json").write_text(
+        json.dumps({"series": series, "ll_market": None, "barometer": baro, "universe": universe,
+                    "ex_label": "Without the largest manager"}), encoding="utf-8")
+
+    fig, ax = plt.subplots(figsize=(9, 4.2))
+    style(ax)
+    for code, col, lw, lab in [("ew_managers", INK, 2.4, "Main index (equal-weighted managers)"),
+                               ("vw_all", GOLD, 1.6, "Value-weighted")]:
+        c_ = cum(r[r["index"] == code].set_index("date")["total"])
+        ax.plot(c_.index, c_.values, color=col, lw=lw, label=lab)
+    c_ = cum(sub.set_index("date")["total"])
+    ax.plot(c_.index, c_.values, color=BLUE, lw=1.6, label="First lien (value-weighted)")
+    ax.set_ylabel("Value of 100 invested", color=SLATE, fontsize=10)
+    ax.xaxis.set_major_locator(mdates.YearLocator())
+    ax.xaxis.set_major_formatter(mdates.DateFormatter("%Y"))
+    ax.legend(frameon=False, fontsize=9.5, loc="upper left")
+    fig.tight_layout()
+    fig.savefig(site / "img" / "dl_usbdc_index.svg", format="svg")
+    plt.close(fig)
+
+    fig, ax = plt.subplots(figsize=(9, 3.4))
+    style(ax)
+    ax.plot(bar.index, bar["marked_below_90_pct"], color=INK, lw=2.2, label="Marked below 90")
+    ax.plot(bar.index, bar["marked_below_80_pct"], color=GOLD, lw=1.6, label="Marked below 80")
+    ax.set_title("Loans marked below 90 and below 80 (% of cost)", color=INK, fontsize=11, loc="left")
+    ax.set_ylim(bottom=0)
+    ax.xaxis.set_major_locator(mdates.YearLocator())
+    ax.xaxis.set_major_formatter(mdates.DateFormatter("%Y"))
+    ax.legend(frameon=False, fontsize=9)
+    fig.tight_layout()
+    fig.savefig(site / "img" / "dl_usbdc_barometer.svg", format="svg")
+    plt.close(fig)
+    print("Written: data/dl_usbdc.json, data/dl_usbdc_series.json, img/dl_usbdc_index.svg, img/dl_usbdc_barometer.svg")
+
+
+def overview_chart(site: Path, eu_rel: Path, usb_rel: Path, us_rel: Path) -> None:
+    """Cumulative main indices of OpenDL Europe, OpenDL US BDC and OpenDL US from the start of the BDC indices."""
+    eu = pd.read_csv(eu_rel / "opendl_europe_returns.csv", parse_dates=["date"])
+    ub = pd.read_csv(usb_rel / "opendl_us_bdc_returns.csv", parse_dates=["date"])
+    us = pd.read_csv(us_rel / "dl_index_returns.csv", parse_dates=["date"])
+    e = eu[eu["index"] == "ew_managers"].set_index("date")["total"].sort_index()
+    b = ub[ub["index"] == "ew_managers"].set_index("date")["total"].sort_index()
+    u = us[us["index"] == "ew_managers"].set_index("date")["total"].sort_index()
+    start = e.index.min()
+    fig, ax = plt.subplots(figsize=(9, 4.0))
+    style(ax)
+    for s_, lab, col in [(e, "OpenDL Europe", INK), (b[b.index >= start], "OpenDL US BDC", BLUE),
+                         (u[u.index >= start], "OpenDL US", GOLD)]:
+        c_ = cum(s_)
+        ax.plot(c_.index, c_.values, color=col, lw=2.2, label=lab)
+    ax.set_ylabel("Value of 100 invested", color=SLATE, fontsize=10)
+    ax.xaxis.set_major_locator(mdates.YearLocator())
+    ax.xaxis.set_major_formatter(mdates.DateFormatter("%Y"))
+    ax.legend(frameon=False, fontsize=10, loc="upper left")
+    fig.tight_layout()
+    fig.savefig(site / "img" / "dl_overview.svg", format="svg")
+    plt.close(fig)
+    print("Written: img/dl_overview.svg (three indices)")
 
 
 if __name__ == "__main__":

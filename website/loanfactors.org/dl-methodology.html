@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="index, follow">
 <title>Methodology – Open Direct Lending Indices | loanfactors.org</title>
-<meta name="description" content="Methodology of the Registered Fund Direct Lending Index: data, loan selection, returns, weighting and validation.">
+<meta name="description" content="Methodology of the Open Direct Lending Indices (OpenDL Europe, OpenDL US BDC, OpenDL US): data, loan selection, returns, weighting and validation.">
 <meta property="og:title" content="Methodology – Open Direct Lending Indices | loanfactors.org">
 <meta property="og:description" content="Methodology of the Registered Fund Direct Lending Index: data, loan selection, returns, weighting and validation.">
 <meta property="og:type" content="website">
@@ -18,12 +18,13 @@
 <a class="brand" href="index.html">loanfactors.org</a>
 <nav class="nav" aria-label="Main"><a href="leveraged-loans.html">Leveraged Loans</a><a href="direct-lending.html" aria-current="page">Direct Lending</a><a href="about.html">About</a></nav>
 </div></header>
-<nav class="subnav" aria-label="Section"><div class="wrap"><a href="direct-lending.html">Overview</a><a href="dl-europe.html">Europe</a><a href="dl-us.html">US</a><a href="dl-analysis.html">Analysis</a><a href="dl-data.html">Data</a><a href="dl-methodology.html" aria-current="page">Methodology</a></div></nav>
+<nav class="subnav" aria-label="Section"><div class="wrap"><a href="direct-lending.html">Overview</a><a href="dl-europe.html">Europe</a><a href="dl-us.html">US</a><a href="dl-us-bdc.html">US BDC</a><a href="dl-analysis.html">Analysis</a><a href="dl-data.html">Data</a><a href="dl-methodology.html" aria-current="page">Methodology</a></div></nav>
 <main><div class="wrap">
 
 <h1>Methodology</h1>
-<p class="lede">How public fund filings become direct lending indices. Both indices follow one method for returns,
-exits, recoveries and weighting; they differ in their data sources. The full documentation and code are on
+<p class="lede">How public fund filings become direct lending indices. All three indices follow one method for returns,
+exits, recoveries and weighting. OpenDL Europe and OpenDL US BDC are built from the schedules of investments of business
+development companies, OpenDL US from the Form N-PORT holdings of registered closed-end funds. The full documentation and code are on
 <a href="https://github.com/thomasmaehlmann-ctrl/leveraged-loan-factors">GitHub</a>.</p>
 
 <h2 id="europe">OpenDL Europe</h2>
@@ -78,6 +79,24 @@ an upper bound.</li>
 <li>Identifiers are free text; their normalization and linking are imperfect. Non-accrual status and payment-in-kind
 interest are not yet captured directly (payment-in-kind interest will be included from the next update).</li>
 <li>Valuations, not transaction prices; gross of fees, unlevered.</li>
+</ul>
+
+<h2 id="us-bdc">OpenDL US BDC</h2>
+<p>OpenDL US BDC applies the procedure of OpenDL Europe to the US dollar loans of the same BDCs: data, cleaning,
+linking, coupons, distress and exits are as described above, with US dollar loans instead of loans in European
+currencies. About 90% of positions are found again in the following quarter.</p>
+<h3>Validation</h3>
+<ul>
+<li><strong>Cliffwater Direct Lending Index (CDLI):</strong> the CDLI is built from the same filings. The
+value-weighted index has a quarterly correlation of <span data-usb="corr_vw">0.97</span> with it, and nearly identical
+price returns (<span data-usb="price_idx">–</span> against <span data-usb="price_cdli">–</span> per year). The total
+return differs by <span data-usb="diff_vw">–0.9</span> percentage points per year, mostly in income, because the index
+uses contractual coupons while the CDLI measures income from the income statements of BDCs, including fees and the
+accretion of discounts. Because both indices rest on the same filings, the comparison validates the processing and
+the return method, not the valuations themselves.</li>
+<li><strong>The same borrowers in two vehicles:</strong> loans to the same borrowers held by the same manager in a
+registered fund (Form N-PORT) and in a BDC differ by a median of <span data-usb="sm_med">0.01</span> points
+(<span data-usb="sm_w1">91%</span> within one point).</li>
 </ul>
 
 <h2 id="us">OpenDL US</h2>
@@ -155,6 +174,6 @@ independent of and not endorsed by Cliffwater LLC.</p>
 <nav aria-label="Footer"><a href="data.html#cite">Cite</a><a href="https://github.com/thomasmaehlmann-ctrl/leveraged-loan-factors">GitHub</a><a href="impressum.html">Legal notice</a><a href="datenschutz.html">Privacy</a></nav>
 </div></footer>
 <script src="js/meta.js?v=17bfea91" defer></script>
-<script src="js/dl.js?v=afa81b6e" defer></script>
+<script src="js/dl.js?v=b2c4e47b" defer></script>
 </body>
 </html>

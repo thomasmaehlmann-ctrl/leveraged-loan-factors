@@ -40,6 +40,8 @@ VARIANTS = {
     "first lien only": ["--first-lien-only"],
     "without Blackstone": ["--exclude-manager", "BLACKSTONE"],
     "European borrowers (any currency)": ["--borrower"],
+    "no collapse filter": ["--no-collapse-filter"],
+    "observed coupons only": ["--no-imputed"],
 }
 
 
@@ -63,6 +65,7 @@ def main() -> None:
     ap.add_argument("--out-dir", default="eu_robustness")
     ap.add_argument("--only", nargs="*", default=None, help="run only these variants")
     ap.add_argument("--start", default="2023-03-31")
+    ap.add_argument("--min-positions", default="10", help="loans per manager in the main index (base specification)")
     ap.add_argument("--base-csv", default=None, help="base rates file (otherwise fetched from FRED once)")
     args = ap.parse_args()
     out = Path(args.out_dir)
@@ -80,7 +83,8 @@ def main() -> None:
         if args.only and name not in args.only:
             continue
         vdir = out / name.replace(" ", "_").replace("(", "").replace(")", "")
-        cmd = [sys.executable, "eu_index.py", "--out-dir", str(vdir), "--user-agent", args.user_agent, "--start", args.start] + extra
+        base_min = [] if "--min-positions" in extra else ["--min-positions", args.min_positions]
+        cmd = [sys.executable, "eu_index.py", "--out-dir", str(vdir), "--user-agent", args.user_agent, "--start", args.start] + base_min + extra
         if base_csv:
             cmd += ["--base-csv", str(base_csv)]
         print(f"--- {name}")

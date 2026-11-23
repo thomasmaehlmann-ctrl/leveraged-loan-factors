@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="index, follow">
 <title>Data – Open Direct Lending Indices | loanfactors.org</title>
-<meta name="description" content="Download the Registered Fund Direct Lending Index: quarterly returns, credit barometer and metadata, CC BY 4.0.">
+<meta name="description" content="Download the Open Direct Lending Indices (OpenDL Europe, OpenDL US BDC, OpenDL US): quarterly returns, credit barometers and metadata, CC BY 4.0.">
 <meta property="og:title" content="Data – Open Direct Lending Indices | loanfactors.org">
 <meta property="og:description" content="Download the Registered Fund Direct Lending Index: quarterly returns, credit barometer and metadata, CC BY 4.0.">
 <meta property="og:type" content="website">
@@ -18,11 +18,11 @@
 <a class="brand" href="index.html">loanfactors.org</a>
 <nav class="nav" aria-label="Main"><a href="leveraged-loans.html">Leveraged Loans</a><a href="direct-lending.html" aria-current="page">Direct Lending</a><a href="about.html">About</a></nav>
 </div></header>
-<nav class="subnav" aria-label="Section"><div class="wrap"><a href="direct-lending.html">Overview</a><a href="dl-europe.html">Europe</a><a href="dl-us.html">US</a><a href="dl-analysis.html">Analysis</a><a href="dl-data.html" aria-current="page">Data</a><a href="dl-methodology.html">Methodology</a></div></nav>
+<nav class="subnav" aria-label="Section"><div class="wrap"><a href="direct-lending.html">Overview</a><a href="dl-europe.html">Europe</a><a href="dl-us.html">US</a><a href="dl-us-bdc.html">US BDC</a><a href="dl-analysis.html">Analysis</a><a href="dl-data.html" aria-current="page">Data</a><a href="dl-methodology.html">Methodology</a></div></nav>
 <main><div class="wrap">
 
 <h1>Data</h1>
-<p class="lede">Both indices are published as versioned releases on Zenodo under CC BY 4.0, with the code on
+<p class="lede">All three indices are published as versioned releases on Zenodo under CC BY 4.0, with the code on
 <a href="https://github.com/thomasmaehlmann-ctrl/leveraged-loan-factors">GitHub</a>.</p>
 
 <h2 id="europe">OpenDL Europe</h2>
@@ -45,6 +45,24 @@ Details in the release notes on Zenodo.</p>
 </tbody></table></div>
 <div class="note"><p>Mählmann, T. (2026). <i>OpenDL Europe: BDC European Direct Lending Index</i> (Version
 <span data-eu="version">2026.12</span>) [Data set]. Zenodo. <a data-eu-href="doi" href="#">https://doi.org/<span data-eu="doi">–</span></a></p></div>
+
+<h2 id="us-bdc">OpenDL US BDC</h2>
+<p>Release v<span data-usb="version">–</span>, return quarters <span data-usb="start">–</span> to
+<span data-usb="end">–</span>.</p>
+<div class="actions">
+<a class="btn btn-primary" data-usb-href="doi" href="#">Download from Zenodo</a>
+</div>
+<div class="table-wrap"><table>
+<thead><tr><th>File</th><th>Content</th></tr></thead><tbody>
+<tr><td><code>opendl_us_bdc_returns.csv</code></td><td>Quarterly returns of the main index (<code>ew_managers</code>), the value-weighted index (<code>vw_all</code>) and the value-weighted index without the largest manager, with income, accretion, price, realized and unrealized components</td></tr>
+<tr><td><code>opendl_us_bdc_subindices.csv</code></td><td>Value-weighted first-lien sub-index</td></tr>
+<tr><td><code>opendl_us_bdc_variants.csv</code></td><td>Main and value-weighted index with a repayment threshold of 80 (upper bound) and with observed coupons only</td></tr>
+<tr><td><code>opendl_us_bdc_barometer.csv</code></td><td>Loans valued below 80 and below 90, trailing four-quarter realized and unrealized returns</td></tr>
+<tr><td><code>opendl_us_bdc_universe.csv</code></td><td>Loans, BDCs, managers, market value, median price and coupon, share of first-lien loans and of the largest manager</td></tr>
+<tr><td><code>metadata.json</code></td><td>Specification, summary and validation statistics</td></tr>
+</tbody></table></div>
+<div class="note"><p>Mählmann, T. (2026). <i>OpenDL US BDC: BDC US Direct Lending Index</i> (Version
+<span data-usb="version">2026.12</span>) [Data set]. Zenodo. <a data-usb-href="doi" href="#">https://doi.org/<span data-usb="doi">–</span></a></p></div>
 
 <h2 id="us">OpenDL US</h2>
 <p>Release v<span data-dl="version">–</span>, return quarters <span data-dl="start">–</span> to
@@ -80,6 +98,6 @@ print((1 + main).prod() ** (4 / len(main)) - 1)   # annualized return</code></pr
 <nav aria-label="Footer"><a href="data.html#cite">Cite</a><a href="https://github.com/thomasmaehlmann-ctrl/leveraged-loan-factors">GitHub</a><a href="impressum.html">Legal notice</a><a href="datenschutz.html">Privacy</a></nav>
 </div></footer>
 <script src="js/meta.js?v=17bfea91" defer></script>
-<script src="js/dl.js?v=afa81b6e" defer></script>
+<script src="js/dl.js?v=b2c4e47b" defer></script>
 </body>
 </html>

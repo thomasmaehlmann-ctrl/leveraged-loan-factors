@@ -67,6 +67,8 @@ def main() -> None:
     ap.add_argument("--out-dir", default="eu_out")
     ap.add_argument("--nport-dir", default=None)
     ap.add_argument("--ncen-dir", default=None)
+    ap.add_argument("--single-facility", action="store_true",
+                    help="part B: only single-tranche BDC positions matched to one position per BDC and borrower")
     ap.add_argument("--max-diff", type=float, default=20.0, help="pairs differing by more are treated as different instruments")
     args = ap.parse_args()
     out = Path(args.out_dir)
@@ -127,7 +129,18 @@ def main() -> None:
                                     share_lower=("dev", lambda x: (x < -0.25).mean()))
         bb = long.groupby(["m", "key1"])["dev"].mean().groupby("m")
         dev["t (borrower-clustered)"] = bb.mean() / (bb.std() / np.sqrt(bb.size()))
-        print("\nDeviation of each manager from other managers on the same borrower (points; >= 20 pairs):")
+        # position level: each manager's valuation vs. the median of the other managers on the same borrower
+        pos_rows = pd.concat([pd.DataFrame({"month_end": pa["month_end"], "m": pa["m1"], "key": pa["key1"], "p": pa["p1"], "o": pa["p2"]}),
+                              pd.DataFrame({"month_end": pa["month_end"], "m": pa["m2"], "key": pa["key2"], "p": pa["p2"], "o": pa["p1"]})])
+        pl = pos_rows.groupby(["month_end", "m", "key"]).agg(p=("p", "first"), o=("o", "median")).reset_index()
+        pl["dev"] = pl["p"] - pl["o"]
+        bb2 = pl.groupby(["m", "key"])["dev"].mean().groupby("m")
+        devp = pd.DataFrame({"positions": pl.groupby("m").size(), "borrowers": pl.groupby("m")["key"].nunique(),
+                             "mean_dev": pl.groupby("m")["dev"].mean(), "median_dev": pl.groupby("m")["dev"].median(),
+                             "t (borrower-clustered)": bb2.mean() / (bb2.std() / np.sqrt(bb2.size()))})
+        print("\nPosition level: each manager vs. the median of the other managers on the same borrower (>= 20 positions):")
+        print(devp[devp["positions"] >= 20].sort_values("mean_dev").round(2).to_string())
+        print("\nDeviation of each manager from other managers on the same borrower (pair level; >= 20 pairs):")
         print(dev[dev["pairs"] >= 20].sort_values("mean_dev").round(2).to_string())
         pa.to_csv(out / "loanlevel_pairs_bdc.csv", index=False)
 
@@ -185,6 +198,12 @@ def main() -> None:
     if pb_.empty:
         print("No matches between N-PORT and BDC positions")
         return
+    if args.single_facility:
+        one = p.set_index(["cik", "key"])["n_tranches"].groupby(level=[0, 1]).max()
+        pb_ = pb_[[one.get((c, k), 2) == 1 for c, k in zip(pb_["cik"], pb_["key"])]]
+        cnt = pb_.groupby(["month_end", "nport_fund", "issuer", "cik"])["key"].transform("nunique")
+        pb_ = pb_[cnt == 1].copy()
+        print("Stricter matching: single-tranche BDC positions, one position per BDC and borrower")
     pb_["absdiff"] = (pb_["p_nport"] - pb_["p_bdc"]).abs()
     big = pb_["absdiff"] > args.max_diff
     pb_ = pb_[~big]

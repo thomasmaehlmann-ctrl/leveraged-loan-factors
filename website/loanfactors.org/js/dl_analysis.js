@@ -283,8 +283,10 @@
     return "Q" + q + " " + y;
   }
   /* ---------- region and tabs ---------- */
-  var REGIONS = { europe: ["OpenDL Europe", "data/dl_eu_series.json"], us: ["OpenDL US", "data/dl_series.json"] };
-  var region = (location.hash || "").replace("#", "") === "us" ? "us" : "europe";
+  var REGIONS = { europe: ["OpenDL Europe", "data/dl_eu_series.json"], "us-bdc": ["OpenDL US BDC", "data/dl_usbdc_series.json"],
+                  us: ["OpenDL US", "data/dl_series.json"] };
+  var h0 = (location.hash || "").replace("#", "");
+  var region = REGIONS[h0] ? h0 : "europe";
   function build() {
     app.innerHTML = "";
     var rc = el("div", { class: "controls region" });

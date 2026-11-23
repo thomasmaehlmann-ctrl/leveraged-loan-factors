@@ -1,5 +1,13 @@
 # Changelog
 
+## v2026.12.4
+- OpenDL US BDC (BDC US Direct Lending Index): `us_bdc_export.py` (data release), `eu_index.py --region us --cdli` (comparison with the CDLI)
+- `us_vehicles.py`: same borrowers in registered funds (N-PORT) and BDCs; position-level comparison with the median BDC of other managers (main measure); first quarter 2026 and decomposition; `--single-facility`, `--bdc-first-lien`
+- `eu_loanlevel.py`: position-level manager deviations; `--single-facility`
+- `eu_index.py`: `--no-collapse-filter`; `eu_robustness.py`: base specification with 10 loans per manager, variants without the collapse filter and with observed coupons only
+- `website/make_dl_web.py`: OpenDL US BDC and the overview of the three indices; `website/loanfactors.org/`: page for OpenDL US BDC
+- `papers/opendl_bdc_paper/`: sources and build scripts of the working paper on BDC filings
+
 ## v2026.12.3
 - OpenDL Europe v2026.12.1 (data release): corrections of version 2026.12
   - `bdc_link.py`: a USD tag is replaced only if cost exceeds principal by more than 15% (version 2026.12 moved USD loans with low cost-to-principal ratios to other currencies)

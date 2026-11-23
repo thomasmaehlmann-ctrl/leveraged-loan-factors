@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="index, follow">
+<title>OpenDL US BDC – BDC US Direct Lending Index | loanfactors.org</title>
+<meta name="description" content="OpenDL US BDC (BDC US Direct Lending Index): quarterly returns of US direct lending from public SEC filings of business development companies.">
+<meta property="og:title" content="OpenDL Europe – BDC European Direct Lending Index | loanfactors.org">
+<meta property="og:description" content="OpenDL Europe (BDC European Direct Lending Index): quarterly returns of European direct lending from public SEC filings of business development companies.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://loanfactors.org/dl-europe.html">
+<link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="style.css?v=e8ba3965">
+</head>
+<body>
+<header class="site-header"><div class="wrap">
+<a class="brand" href="index.html">loanfactors.org</a>
+<nav class="nav" aria-label="Main"><a href="leveraged-loans.html">Leveraged Loans</a><a href="direct-lending.html" aria-current="page">Direct Lending</a><a href="about.html">About</a></nav>
+</div></header>
+<nav class="subnav" aria-label="Section"><div class="wrap"><a href="direct-lending.html">Overview</a><a href="dl-europe.html">Europe</a><a href="dl-us.html">US</a><a href="dl-us-bdc.html" aria-current="page">US BDC</a><a href="dl-analysis.html">Analysis</a><a href="dl-data.html">Data</a><a href="dl-methodology.html">Methodology</a></div></nav>
+<main><div class="wrap">
+
+<h1>OpenDL US BDC</h1>
+<p class="small">BDC US Direct Lending Index</p>
+<p class="lede">A quarterly return index of US direct lending, built from the machine-readable schedules of investments
+that business development companies file with the SEC. It applies the procedure of OpenDL Europe to the US dollar loans
+of BDCs. Open data, open code.</p>
+<div class="actions">
+<a class="btn btn-primary" href="dl-data.html#us-bdc">Download the data</a>
+<a class="btn btn-secondary" href="dl-analysis.html#us-bdc">Explore the index</a>
+</div>
+
+<dl class="facts">
+<div><dt>Last quarter (<span data-usb="last_quarter">–</span>)</dt><dd data-usb="last_q">–</dd></div>
+<div><dt>Last four quarters</dt><dd data-usb="t4q">–</dd></div>
+<div><dt>Annualized since <span data-usb="start">Q2 2023</span></dt><dd data-usb="ann">–</dd></div>
+<div><dt>Managers / loans</dt><dd><span data-usb="managers">–</span> / <span data-usb="positions">–</span></dd></div>
+<div><dt>Loans marked below 90</dt><dd data-usb="b90">–</dd></div>
+</dl>
+
+<h2 class="takeaway">The broad view of US direct lending</h2>
+<p>BDCs hold the largest part of US direct lending that is reported loan by loan: about
+<span data-usb="mv">USD 500bn</span> in the latest quarter, held by <span data-usb="bdcs">150</span> BDCs. Built from the
+same filings as the Cliffwater Direct Lending Index (CDLI), OpenDL US BDC tracks it with a quarterly correlation of
+<span data-usb="corr_vw">0.97</span> and nearly identical price returns (<span data-usb="price_idx">–</span> against
+<span data-usb="price_cdli">–</span> per year); its income is lower because it uses contractual coupons, without fees
+and the accretion of discounts.</p>
+<figure>
+<img src="img/dl_usbdc_index.svg" alt="Cumulative value of OpenDL US BDC" width="900" height="420">
+<figcaption>Value of 100 invested at the end of March 2023. Main index: equal-weighted across managers with at least
+ten loans. Returns gross of fees and unlevered.</figcaption>
+</figure>
+
+<h2>Credit health barometer</h2>
+<p>Share of loans valued below 90 and below 80, weighted by estimated cost, in the latest quarter
+<span data-usb="b90">–</span> and <span data-usb="b80">–</span>.</p>
+<figure>
+<img src="img/dl_usbdc_barometer.svg" alt="Loans marked below 90 and below 80" width="900" height="340">
+</figure>
+<div class="table-wrap"><table id="usb-b" class="stats"><tbody><tr><td>Loading …</td></tr></tbody></table></div>
+
+<h2>Quarterly returns</h2>
+<div class="table-wrap"><table id="usb-q" class="stats"><tbody><tr><td>Loading …</td></tr></tbody></table></div>
+<p class="small">Returns in % per quarter, gross of fees and unlevered. More series, the first-lien sub-index and the
+sensitivity variants on the <a href="dl-analysis.html#us-bdc">analysis page</a>.</p>
+
+<div class="note"><p><strong>Two US indices.</strong> OpenDL US BDC measures the US direct loans of BDCs; OpenDL US
+measures those of interval funds and other registered closed-end funds, from Form N-PORT. The same manager values loans
+to the same borrower alike in both vehicles; different managers disagree on troubled loans. Comparing the two indices
+shows how much a direct lending index depends on whose valuations it aggregates. See the
+<a href="dl-methodology.html#us-bdc">methodology</a>.</p></div>
+</div></main>
+<footer class="site-footer"><div class="wrap">
+<span>© 2026 Thomas Mählmann. Data CC BY 4.0, code MIT.</span>
+<nav aria-label="Footer"><a href="data.html#cite">Cite</a><a href="https://github.com/thomasmaehlmann-ctrl/leveraged-loan-factors">GitHub</a><a href="impressum.html">Legal notice</a><a href="datenschutz.html">Privacy</a></nav>
+</div></footer>
+<script src="js/meta.js?v=17bfea91" defer></script>
+<script src="js/dl.js?v=b2c4e47b" defer></script>
+</body>
+</html>

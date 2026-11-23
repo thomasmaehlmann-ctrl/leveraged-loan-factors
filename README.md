@@ -191,6 +191,8 @@ Financial Statement and Notes data sets. Data release: Zenodo,
 | `eu_robustness.py` | Sensitivity variants |
 | `eu_loanlevel.py` | Loan-level validation: different managers; same loans in N-PORT and BDC data |
 | `eu_export.py` | Versioned data release |
+| `us_bdc_export.py` | Versioned data release of OpenDL US BDC (US dollar loans of BDCs, same procedure) |
+| `us_vehicles.py` | Same borrowers in registered funds and BDCs: agreement, managers, first quarter of 2026 |
 | `eu_feasibility.py` | Feasibility of European indices from N-PORT (registered funds) |
 
 Run from a working folder that contains the scripts of `direct_lending/` and the data sets in `fsn_data/`
@@ -236,5 +238,8 @@ For the direct lending indices:
 > Mählmann, T. (2026). *OpenDL US: Registered Fund Direct Lending Index* (Version 2026.12) [Data set]. Zenodo.
 > https://doi.org/10.5281/zenodo.24280968
 
-> Mählmann, T. (2026). *OpenDL Europe: BDC European Direct Lending Index* (Version 2026.12) [Data set]. Zenodo.
-> https://doi.org/10.5281/zenodo.24396814
+> Mählmann, T. (2026). *OpenDL Europe: BDC European Direct Lending Index* [Data set]. Zenodo.
+> https://doi.org/10.5281/zenodo.24396813
+
+> Mählmann, T. (2026). *OpenDL US BDC: BDC US Direct Lending Index* [Data set]. Zenodo.
+> https://doi.org/10.5281/zenodo.24463013
